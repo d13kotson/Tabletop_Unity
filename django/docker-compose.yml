@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:12.2
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: danny13kotson
+  redis:
+    image: redis:2.8
+    ports:
+      - "6379:6379"
+  web:
+    build: .
+    command: daphne -b 0.0.0.0 -p 80 tabletop.asgi:application
+    volumes:
+      - .:/code
+    ports:
+      - "80:80"
+    depends_on:
+      - redis
