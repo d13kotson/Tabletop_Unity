@@ -34,4 +34,12 @@ urlpatterns = [
     path('addTrainerEdge/', views.TrainerEdgeAdd.as_view(), name='traineredge-add'),
     path('trainerFeature/<int:pk>/', views.TrainerFeatureDetail.as_view(), name='trainerfeature-detail'),
     path('addTrainerFeature/', views.TrainerFeatureAdd.as_view(), name='trainerfeature-add'),
+
+    path('messages/<int:game>/', views.GameMessageList.as_view()),
+    path('background/', views.create_background),
+    path('background/<int:pk>/', views.background),
+    path('backgrounds/', views.backgrounds),
+    path('token/', views.create_token),
+    path('token/<int:pk>/', views.token),
+    path('tokens/', views.tokens),
 ]

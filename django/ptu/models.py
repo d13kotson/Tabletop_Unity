@@ -7,7 +7,7 @@ from math import floor
 
 class Game(models.Model):
     title = models.CharField(max_length=20)
-    gm = models.ForeignKey(User, on_delete=models.CASCADE)
+    gm = models.ForeignKey(User, related_name='game', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -16,7 +16,7 @@ class Game(models.Model):
 class Trainer(models.Model):
     name = models.CharField(max_length=20)
     game = models.ForeignKey(Game, related_name='trainer', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='trainer', on_delete=models.CASCADE)
     level = models.IntegerField(default=1)
     money = models.IntegerField(default=5000)
     acrobatics = models.IntegerField(default=2)
@@ -79,10 +79,26 @@ class TrainerItem(models.Model):
             return f'{str(self.trainer)} {str(self.item.name)}'
 
 
+class Type(models.Model):
+    name = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
+class TypeEffectiveness(models.Model):
+    attack = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='attack_type')
+    defend = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='defend_type')
+
+    def __str__(self):
+        return f'{self.attack} > {self.defend}'
+
+
 class Species(models.Model):
     name = models.CharField(max_length=20)
-    dexNum = models.IntegerField(unique=True)
-    type = models.CharField(max_length=20)
+    dex_num = models.IntegerField(unique=True)
+    type_1 = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='type_1')
+    type_2 = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='type_2')
     base_constitution = models.IntegerField()
     base_attack = models.IntegerField()
     base_defense = models.IntegerField()
@@ -108,6 +124,10 @@ class Species(models.Model):
     intuition = models.CharField(max_length=10, blank=True)
     overland = models.CharField(max_length=10, blank=True)
     swimming = models.CharField(max_length=10, blank=True)
+    burrow = models.CharField(max_length=10, blank=True)
+    sky = models.CharField(max_length=10, blank=True)
+    levitate = models.CharField(max_length=10, blank=True)
+    teleport = models.CharField(max_length=10, blank=True)
 
     def __str__(self):
         return self.name
@@ -122,23 +142,32 @@ class Evolution(models.Model):
         return self.evolved.name
 
 
+class DamageBase(models.Model):
+    num_die = models.IntegerField()
+    die_num = models.IntegerField()
+    add = models.IntegerField()
+
+    def __str__(self):
+        return f'Damage Base {self.id}'
+
+
 class Attack(models.Model):
     name = models.CharField(max_length=20)
-    type = models.CharField(max_length=20)
+    type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='attack')
     frequency = models.CharField(max_length=20)
     ac = models.IntegerField()
-    damageBase = models.IntegerField()
-    attackClass = models.CharField(max_length=20)
+    damage_base = models.ForeignKey(DamageBase, on_delete=models.CASCADE)
+    attack_class = models.CharField(max_length=20)
     range = models.CharField(max_length=60)
     effect = models.TextField(max_length=400)
-    game = models.ForeignKey(Game, on_delete=models.CASCADE, null=True)
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 
 class SpeciesAttack(models.Model):
-    species = models.ForeignKey(Species, related_name='speciesAttack', on_delete=models.CASCADE)
+    species = models.ForeignKey(Species, related_name='species_attack', on_delete=models.CASCADE)
     attack = models.ForeignKey(Attack, on_delete=models.CASCADE)
     level = models.IntegerField()
 
@@ -146,26 +175,101 @@ class SpeciesAttack(models.Model):
         return f'{str(self.species)} {str(self.attack)}'
 
 
-class Pokemon(models.Model):
+class Nature(models.Model):
     name = models.CharField(max_length=20)
-    trainer = models.ForeignKey(Trainer, null=True, related_name='pokemon', on_delete=models.CASCADE)
-    game = models.ForeignKey(Game, null=True, related_name='pokemon', on_delete=models.CASCADE)
-    species = models.ForeignKey(Species, on_delete=models.CASCADE)
-    nature = models.IntegerField()
-    level = models.IntegerField(default=1)
-    experience = models.IntegerField(default=0)
-    inParty = models.BooleanField(default=False)
     constitution = models.IntegerField()
     attack = models.IntegerField()
     defense = models.IntegerField()
     special_attack = models.IntegerField()
     special_defense = models.IntegerField()
     speed = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class Pokemon(models.Model):
+    name = models.CharField(max_length=20)
+    trainer = models.ForeignKey(Trainer, null=True, related_name='pokemon', on_delete=models.CASCADE)
+    game = models.ForeignKey(Game, null=True, related_name='pokemon', on_delete=models.CASCADE)
+    species = models.ForeignKey(Species, on_delete=models.CASCADE)
+    nature = models.ForeignKey(Nature, on_delete=models.CASCADE)
+    level = models.IntegerField(default=1)
+    experience = models.IntegerField(default=0)
+    in_party = models.BooleanField(default=False)
+    constitution = models.IntegerField()
+    attack = models.IntegerField()
+    defense = models.IntegerField()
+    special_attack = models.IntegerField()
+    special_defense = models.IntegerField()
+    speed = models.IntegerField()
+    attack_cs = models.IntegerField()
+    defense_cs = models.IntegerField()
+    special_attack_cs = models.IntegerField()
+    special_defense_cs = models.IntegerField()
+    speed_cs = models.IntegerField()
     current_hp = models.IntegerField(default=0)
     ability = models.CharField(max_length=40, null=True, blank=True)
 
     def __str__(self):
         return self.name
+
+    def get_cs_mult(self, cs):
+        if cs <= -6:
+            return 0.25
+        elif cs == -5:
+            return 2.0/7.0
+        elif cs == -4:
+            return 2.0/6.0
+        elif cs == -3:
+            return 0.4
+        elif cs == -2:
+            return .5
+        elif cs == -1:
+            return 2.0/3.0
+        elif cs == 0:
+            return 1
+        elif cs == 1:
+            return 1.5
+        elif cs == 2:
+            return 2
+        elif cs == 3:
+            return 2.5
+        elif cs == 4:
+            return 3
+        elif cs == 5:
+            return 3.5
+        elif cs >= 6:
+            return 4
+
+    @property
+    def total_constitution(self):
+        return self.constitution + self.species.base_constitution + self.nature.constitution
+
+    @property
+    def total_attack(self):
+        cs_mult = self.get_cs_mult(self.attack_cs)
+        return (self.attack + self.species.base_attack + self.nature.attack) * cs_mult
+
+    @property
+    def total_defense(self):
+        cs_mult = self.get_cs_mult(self.defense_cs)
+        return (self.defense + self.species.base_defense + self.nature.defense) * cs_mult
+
+    @property
+    def total_special_attack(self):
+        cs_mult = self.get_cs_mult(self.special_attack_cs)
+        return (self.special_attack + self.species.base_special_attack + self.nature.special_attack) * cs_mult
+
+    @property
+    def total_special_defense(self):
+        cs_mult = self.get_cs_mult(self.special_defense_cs)
+        return (self.special_defense + self.species.base_special_defense + self.nature.special_defense) * cs_mult
+
+    @property
+    def total_speed(self):
+        cs_mult = self.get_cs_mult(self.speed_cs)
+        return (self.speed + self.species.base_speed + self.nature.speed) * cs_mult
 
     def exp_to_level(self, level):
         factor = floor(level / 10)
@@ -179,7 +283,7 @@ class Pokemon(models.Model):
 
 
 class PokemonAttack(models.Model):
-    pokemon = models.ForeignKey(Pokemon, related_name='pokemonAttack', on_delete=models.CASCADE)
+    pokemon = models.ForeignKey(Pokemon, related_name='pokemon_attack', on_delete=models.CASCADE)
     attack = models.ForeignKey(Attack, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -187,7 +291,7 @@ class PokemonAttack(models.Model):
 
 
 class TrainerAttack(models.Model):
-    trainer = models.ForeignKey(Trainer, related_name='trainerAttack', on_delete=models.CASCADE)
+    trainer = models.ForeignKey(Trainer, related_name='trainer_attack', on_delete=models.CASCADE)
     attack = models.ForeignKey(Attack, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -241,7 +345,7 @@ class FeatureAttack(models.Model):
 
 
 class TrainerEdge(models.Model):
-    trainer = models.ForeignKey(Trainer, related_name='trainerEdge', on_delete=models.CASCADE)
+    trainer = models.ForeignKey(Trainer, related_name='trainer_edge', on_delete=models.CASCADE)
     edge = models.ForeignKey(Edge, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -249,8 +353,41 @@ class TrainerEdge(models.Model):
 
 
 class TrainerFeature(models.Model):
-    trainer = models.ForeignKey(Trainer, related_name='trainerFeature', on_delete=models.CASCADE)
+    trainer = models.ForeignKey(Trainer, related_name='trainer_feature', on_delete=models.CASCADE)
     feature = models.ForeignKey(Feature, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{str(self.trainer)} {str(self.feature)}'
+
+
+class Message(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    message = models.CharField(max_length=200)
+    display_name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.message
+
+
+class Image(models.Model):
+    image = models.CharField(max_length=100)
+    height = models.IntegerField()
+    width = models.IntegerField()
+
+
+class Background(models.Model):
+    gm = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=20)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+
+class Token(models.Model):
+    gm = models.ForeignKey(User, related_name='gm', on_delete=models.CASCADE)
+    title = models.CharField(max_length=20)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title

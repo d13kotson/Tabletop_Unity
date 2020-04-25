@@ -6,6 +6,18 @@ import random
 import re
 
 
+class TypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Type
+        fields = '__all__'
+
+
+class TypeEffectivenessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TypeEffectiveness
+        fields = '__all__'
+
+
 class AttackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attack
@@ -38,6 +50,7 @@ class ItemSerializer(serializers.ModelSerializer):
 
 class TrainerItemSerializer(serializers.ModelSerializer):
     item = ItemSerializer()
+
     class Meta:
         model = TrainerItem
         fields = '__all__'
@@ -66,7 +79,7 @@ class SpeciesAttackSerializer(serializers.ModelSerializer):
 
 
 class SpeciesSerializer(serializers.ModelSerializer):
-    speciesAttack = SpeciesAttackSerializer(many=True, read_only=True)
+    species_attack = SpeciesAttackSerializer(many=True, read_only=True)
 
     class Meta:
         model = Species
@@ -87,9 +100,40 @@ class PokemonAttackSimpleSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class NatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Nature
+        fields = '__all__'
+
+
 class PokemonSerializer(serializers.ModelSerializer):
-    pokemonAttack = PokemonAttackSerializer(many=True, read_only=True)
+    pokemon_attack = PokemonAttackSerializer(many=True, read_only=True)
     species = SpeciesSerializer()
+    nature = NatureSerializer()
+    total_constitution = serializers.SerializerMethodField()
+    total_attack = serializers.SerializerMethodField()
+    total_defense = serializers.SerializerMethodField()
+    total_special_attack = serializers.SerializerMethodField()
+    total_special_defense = serializers.SerializerMethodField()
+    total_speed = serializers.SerializerMethodField()
+    
+    def get_total_constitution(self, obj):
+        return obj.total_constitution
+
+    def get_total_attack(self, obj):
+        return obj.total_attack
+
+    def get_total_defense(self, obj):
+        return obj.total_defense
+
+    def get_total_special_attack(self, obj):
+        return obj.total_special_attack
+
+    def get_total_special_defense(self, obj):
+        return obj.total_special_defense
+
+    def get_total_speed(self, obj):
+        return obj.total_speed
 
     class Meta:
         model = Pokemon
@@ -116,6 +160,12 @@ class PokemonSimpleSerializer(serializers.ModelSerializer):
         instance.special_attack = validated_data.get('special_attack', instance.special_attack)
         instance.special_defense = validated_data.get('special_defense', instance.special_defense)
         instance.speed = validated_data.get('speed', instance.speed)
+        instance.constitution_cs = validated_data.get('constitution_cs', instance.constitution_cs)
+        instance.attack_cs = validated_data.get('attack_cs', instance.attack_cs)
+        instance.defense_cs = validated_data.get('defense_cs', instance.defense_cs)
+        instance.special_attack_cs = validated_data.get('special_attack_cs', instance.special_attack_cs)
+        instance.special_defense_cs = validated_data.get('special_defense_cs', instance.special_defense_cs)
+        instance.speed_cs = validated_data.get('speed_cs', instance.speed_cs)
         instance.current_hp = validated_data.get('current_hp', instance.current_hp)
         instance.save()
         return instance
@@ -140,7 +190,7 @@ class PokemonSimpleSerializer(serializers.ModelSerializer):
 
         species = pokemon.species
         base_stat_total = species.base_constitution + species.base_attack + species.base_defense + \
-            species.base_special_attack + species.base_special_defense + species.base_speed
+                          species.base_special_attack + species.base_special_defense + species.base_speed
 
         for i in range(10 + pokemon.level):
             stat = random.randint(0, base_stat_total)
@@ -242,10 +292,10 @@ class TrainerFeatureSimpleSerializer(serializers.ModelSerializer):
 
 class TrainerSerializer(serializers.ModelSerializer):
     pokemon = PokemonSerializer(many=True, read_only=True)
-    trainerEdge = TrainerEdgeSerializer(many=True, read_only=True)
-    trainerFeature = TrainerFeatureSerializer(many=True, read_only=True)
+    trainer_edge = TrainerEdgeSerializer(many=True, read_only=True)
+    trainer_feature = TrainerFeatureSerializer(many=True, read_only=True)
     item = TrainerItemSerializer(many=True, read_only=True)
-    trainerAttack = TrainerAttackSerializer(many=True, read_only=True)
+    trainer_attack = TrainerAttackSerializer(many=True, read_only=True)
 
     class Meta:
         model = Trainer
@@ -273,45 +323,16 @@ class GameSimpleSerializer(serializers.ModelSerializer):
         fields = ['id', 'title']
 
 
-class UserInfoSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    username = serializers.CharField()
-    gm = serializers.SerializerMethodField()
-    item_id = serializers.SerializerMethodField()
-    game_name = serializers.SerializerMethodField()
+class UserInfoSerializer(serializers.ModelSerializer):
+    trainer = TrainerSimpleSerializer(many=True, read_only=True)
+    game = GameSimpleSerializer(many=True, read_only=True)
 
-    _gm = None
-    _item_name = None
-    _game_name = None
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'trainer', 'game']
 
-    def retrieve_data(self, obj):
-        self._user_id = obj.id
-        if Game.objects.filter(gm=obj).exists():
-            self._gm = True
-            game = Game.objects.get(gm=obj)
-            self._item_id = game.id
-            self._game_name = game.title
-        else:
-            self._gm = False
-            if Trainer.objects.filter(user=obj).exists():
-                trainer = Trainer.objects.get(user=obj)
-                self._item_id = trainer.id
-                self._game_name = trainer.game.title
-            else:
-                self._item_id = 0
-                self._game_name = ''
 
-    def get_gm(self, obj):
-        if self._gm is None:
-            self.retrieve_data(obj)
-        return self._gm
-
-    def get_item_id(self, obj):
-        if self._item_id is None:
-            self.retrieve_data(obj)
-        return self._item_id
-
-    def get_game_name(self, obj):
-        if self._game_name is None:
-            self.retrieve_data(obj)
-        return self._game_name
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'

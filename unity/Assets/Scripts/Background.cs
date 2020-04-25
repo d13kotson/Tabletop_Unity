@@ -7,13 +7,18 @@ public class Background : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(this.GetBackground("http://localhost/map/background/86"));
+
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void LoadBackground(string backgroundID)
+    {
+        StartCoroutine(this.GetBackground(string.Format("http://localhost/map/background/{0}", backgroundID)));
     }
 
     private IEnumerator GetBackground(string url)

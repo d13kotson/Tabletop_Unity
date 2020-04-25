@@ -1155,7 +1155,7 @@ GameObject:
   - component: {fileID: 2074329399}
   m_Layer: 0
   m_Name: Controller
-  m_TagString: Untagged
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1172,6 +1172,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc58b1f4c9407754498335e25580012c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  BackgroundPrefab: {fileID: 3402956654541558139, guid: 1995459dbb1e97e48b9cdd24d506a8f2,
+    type: 3}
+  TokenPrefab: {fileID: 1983232501332438839, guid: beec3fbe0a162364291b4529d5afc145,
+    type: 3}
+  CharacterPrefab: {fileID: 4881541913530570782, guid: 9db35af600ccac44d9da95fdcfb00783,
+    type: 3}
+  authToken: 
+  IsDragging: 0
   Username: {fileID: 1230396752}
   Password: {fileID: 1407367583}
 --- !u!4 &2074329400
