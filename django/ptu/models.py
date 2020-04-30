@@ -370,7 +370,7 @@ class Message(models.Model):
 
 
 class Image(models.Model):
-    image = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
     height = models.IntegerField()
     width = models.IntegerField()
 
@@ -385,7 +385,7 @@ class Background(models.Model):
 
 
 class Token(models.Model):
-    gm = models.ForeignKey(User, related_name='gm', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='gm', on_delete=models.CASCADE)
     title = models.CharField(max_length=20)
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
 

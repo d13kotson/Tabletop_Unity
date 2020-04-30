@@ -4,13 +4,13 @@ using UnityEngine.Networking;
 
 public class Background : MonoBehaviour
 {
-    // Start is called before the first frame update
+    private GameController controller;
+
     void Start()
     {
-
+        this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -18,7 +18,7 @@ public class Background : MonoBehaviour
 
     public void LoadBackground(string backgroundID)
     {
-        StartCoroutine(this.GetBackground(string.Format("http://localhost/map/background/{0}", backgroundID)));
+        StartCoroutine(this.GetBackground(string.Format("http://localhost/api/image/{1}", this.controller.URL, backgroundID)));
     }
 
     private IEnumerator GetBackground(string url)

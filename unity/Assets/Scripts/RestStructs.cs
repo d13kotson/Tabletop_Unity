@@ -287,4 +287,19 @@ internal struct MessageList
 {
     public Message[] messages;
 }
+
+[Serializable]
+internal struct BackgroundStruct
+{
+    public int gm;
+    public string title;
+    public int image;
+}
+
+[Serializable]
+internal struct BackgroundList
+{
+    public BackgroundStruct[] list;
+}
+
 #pragma warning restore 0649

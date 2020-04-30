@@ -20,6 +20,7 @@ public class GameController : MonoBehaviour
     internal Game game = default;
     internal Trainer trainer = default;
     private UnityWebRequest currentRequest = default;
+    private GameObject background = default;
     private List<GameObject> tokens = new List<GameObject>();
 #if UNITY_WEBGL
     internal Socket socket = default;
@@ -31,9 +32,11 @@ public class GameController : MonoBehaviour
     public List<Action> RefreshActions = new List<Action>();
 
     public InputField Username, Password;
+    public string URL = default;
 
     void Start()
     {
+        this.URL = Application.absoluteURL;
         DontDestroyOnLoad(this.gameObject);
     }
 
@@ -171,11 +174,8 @@ public class GameController : MonoBehaviour
 #if UNITY_WEBGL
         try
         {
-            GameObject background = Instantiate(this.BackgroundPrefab, Vector3.zero, Quaternion.identity);
-            if (!string.IsNullOrEmpty(this.socket.Background))
-            {
-                background.GetComponent<Background>().LoadBackground(this.socket.Background);
-            }
+            this.background = Instantiate(this.BackgroundPrefab, Vector3.zero, Quaternion.identity);
+            this.SetBackground();
             if (this.socket.Tokens != null)
             {
                 for (int i = 0; i < this.socket.Tokens.Length; i++)
@@ -191,6 +191,17 @@ public class GameController : MonoBehaviour
         {
             print(e);
         }
+#endif
+    }
+
+    public void SetBackground()
+    {
+#if UNITY_WEBGL
+        print("Adding Background: " + this.socket.Background);
+        if (!string.IsNullOrEmpty(this.socket.Background))
+            {
+                this.background.GetComponent<Background>().LoadBackground(this.socket.Background);
+            }
 #endif
     }
 
@@ -216,5 +227,10 @@ public class GameController : MonoBehaviour
             yield return null;
         }
         operation();
+    }
+
+    internal void Print(string message)
+    {
+        print(message);
     }
 }

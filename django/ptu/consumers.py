@@ -36,11 +36,11 @@ class PTUConsumer(WebsocketConsumer):
         type = text_data_json['type']
         content = text_data_json['content']
 
-        if type == 'setBackground':
+        if type == 'set_background':
             self.set_background_state(content)
-        elif type == 'addToken':
+        elif type == 'add_token':
             self.add_token_state(content)
-        elif type == 'updateToken':
+        elif type == 'update_token':
             self.update_token_state(content)
         elif type == 'chat':
             return self.chat(content)
@@ -65,7 +65,7 @@ class PTUConsumer(WebsocketConsumer):
 
     def set_background(self, event):
         self.send(text_data=json.dumps({
-            'type': 'setBackground',
+            'type': 'set_background',
             'content': event['content']
         }))
 

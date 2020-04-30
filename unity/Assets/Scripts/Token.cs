@@ -24,7 +24,9 @@ public class Token : MonoBehaviour
     {
         this.isDragging = false;
         this.controller.IsDragging = false;
+#if UNITY_WEBGL
         this.controller.socket.UpdateToken(this);
+#endif
     }
 
     void Update()

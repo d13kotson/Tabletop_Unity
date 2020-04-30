@@ -51,6 +51,11 @@ internal class Socket
         WebSocketSend(string.Format("{{\"type\": \"updateToken\", \"content\": {{\"tokenID\": {0}, \"tokenX\": {1}, \"tokenY\": {2}}}}}", token.mapID, mapToken.x, mapToken.y));
     }
 
+    public void UpdateBackground(BackgroundStruct background)
+    {
+        WebSocketSend(string.Format("{{\"type\": \"set_background\", \"content\": \"{0}\"}}", background.image));
+    }
+
     public void ParseMessage(string content)
     {
         SocketMessage message = JsonUtility.FromJson<SocketMessage>(content);
@@ -63,6 +68,10 @@ internal class Socket
             case "updateToken":
                 this.UpdateToken(message.content);
                 break;
+            case "set_background":
+                this.SetBackground(message.content);
+                this.controller.SetBackground();
+                break;
             case "chat_message":
                 this.chat.ReceiveMessage(message.content);
                 break;
@@ -72,6 +81,11 @@ internal class Socket
     private void UpdateState(string content)
     {
         this.mapState = JsonUtility.FromJson<MapState>(content);
+    }
+
+    private void SetBackground(string content)
+    {
+        this.mapState.background = content;
     }
 
     private void UpdateToken(string content)

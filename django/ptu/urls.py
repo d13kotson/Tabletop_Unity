@@ -12,6 +12,9 @@ urlpatterns = [
     path('attacks/', views.AttackList.as_view()),
     path('species/', views.SpeciesList.as_view()),
     path('items/', views.ItemList.as_view()),
+    path('images/', views.ImageList.as_view()),
+    path('backgrounds/', views.BackgroundList.as_view()),
+    path('tokens/', views.TokenList.as_view()),
 
     path('user/<str:username>/', views.UserInformation.as_view(), name='user-info'),
     path('attack/<int:pk>/', views.AttackDetail.as_view(), name='attack-detail'),
@@ -36,10 +39,9 @@ urlpatterns = [
     path('addTrainerFeature/', views.TrainerFeatureAdd.as_view(), name='trainerfeature-add'),
 
     path('messages/<int:game>/', views.GameMessageList.as_view()),
-    path('background/', views.create_background),
-    path('background/<int:pk>/', views.background),
-    path('backgrounds/', views.backgrounds),
-    path('token/', views.create_token),
-    path('token/<int:pk>/', views.token),
-    path('tokens/', views.tokens),
+    path('background-info/<int:pk>/', views.BackgroundDetail.as_view(), name='background-info'),
+    path('image/', views.upload_image),
+    path('image/<int:pk>/', views.image),
+    path('image-info/<int:pk>/', views.ImageDetail.as_view(), name='image-info'),
+    path('token-info/<int:pk>/', views.TokenDetail.as_view(), name='token-info'),
 ]

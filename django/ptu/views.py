@@ -97,6 +97,24 @@ class GameMessageList(generics.ListAPIView):
         return Message.objects.filter(game=self.kwargs['game'])
 
 
+class ImageList(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Image.objects.all()
+    serializer_class = serializers.ImageSerializer
+
+
+class BackgroundList(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Background.objects.all()
+    serializer_class = serializers.BackgroundSerializer
+
+
+class TokenList(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Token.objects.all()
+    serializer_class = serializers.TokenSerializer
+
+
 """ Detail Views """
 
 
@@ -231,95 +249,53 @@ class TrainerFeatureAdd(generics.CreateAPIView):
     serializer_class = serializers.TrainerFeatureSimpleSerializer
 
 
-def create_background(request):
-    if request.method == 'POST':
-        body = json.loads(request.body)
-        background_image = body['image']
-        title = body['title']
-        gm = request.user
-        background = Background(
-            image='',
-            title=title,
-            gm=gm
-        )
-        background.save()
-        background.image = get_background_image_url(str(background.id) + '.png')
-        Path(os.path.dirname(background.image)).mkdir(parents=True, exist_ok=True)
-        image = open(background.image, 'wb+')
-        image.write(array.array('B', background_image))
-        image.close()
-        background.save()
-    return HttpResponse();
+class ImageDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Image.objects.all()
+    serializer_class = serializers.ImageSerializer
 
 
-def background(request, pk):
-    background = get_object_or_404(Background, id=pk)
+class BackgroundDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Background.objects.all()
+    serializer_class = serializers.BackgroundSerializer
+
+
+class TokenDetail(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = Token.objects.all()
+    serializer_class = serializers.TokenSerializer
+
+
+def image(request, pk):
+    image = get_object_or_404(Image, id=pk)
     try:
-        with open(background.image, 'rb') as image:
-            return HttpResponse(image.read(), content_type='image/png')
-    except:
-        return HttpResponse()
-
-
-def backgrounds(request):
-    backgroundsQS = Background.objects.filter(gm=request.user)
-    backgrounds = []
-    for background in backgroundsQS:
-        backgrounds.append({
-            "title": background.title,
-            "id": background.id
-        })
-    return HttpResponse(json.dumps(backgrounds))
-
-
-def token(request, pk):
-    token = get_object_or_404(Token, id=pk)
-    try:
-        with open(token.image, 'rb') as image:
-            return HttpResponse(image.read(), content_type='image/png')
+        with open(get_image_url(image.id), 'rb') as image_content:
+            return HttpResponse(image_content.read(), content_type='image/png')
     except:
         return HttpResponse(status=404)
 
 
-def create_token(request):
+def upload_image(request):
     if request.method == 'POST':
         body = json.loads(request.body)
-        tokenImage = body['image']
-        title = body['title']
+        image_data = body['image']
+        name = body['name']
         height = body['height']
         width = body['width']
-        gm = request.user
-        token = Token(
-            image='',
-            title=title,
-            gm=gm,
+        image = Image(
+            name=name,
             height=height,
             width=width
         )
-        token.save()
-        token.image = get_token_image_url(str(token.id) + '.png')
-        Path(os.path.dirname(token.image)).mkdir(parents=True, exist_ok=True)
-        image = open(token.image, 'wb+')
-        image.write(array.array('B', tokenImage))
-        image.close()
-        token.save()
+        image.save()
+        image_path = get_image_url(image.id)
+        Path(os.path.dirname(image_path)).mkdir(parents=True, exist_ok=True)
+        image_file = open(image_path, 'wb+')
+        image_file.write(array.array('B', image_data))
+        image_file.close()
     return HttpResponse();
 
 
-def tokens(request):
-    tokensQS = Token.objects.filter(gm=request.user)
-    tokens = []
-    for token in tokensQS:
-        tokens.append({
-            "title": token.title,
-            "id": token.id
-        })
-    return HttpResponse(json.dumps(tokens))
-
-
-def get_background_image_url(url):
-    return 'media/backgrounds/' + url
-
-
-def get_token_image_url(url):
-    return 'media/tokens/' + url
+def get_image_url(image_id):
+    return f'media/images/{image_id}.png'
