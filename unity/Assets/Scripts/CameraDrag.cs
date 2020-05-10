@@ -4,10 +4,15 @@ using UnityEngine;
 
 public class CameraDrag : MonoBehaviour
 {
+    public float scrollRate = 0.1f;
+    public float minZoom = 0.1f;
+    public float maxZoom = 10.0f;
+
     private Vector3 Origin;
     private Vector3 Diference;
     private bool Drag = false;
     private GameController controller = default;
+    private float zoom = 2;
 
     private void Start()
     {
@@ -34,6 +39,24 @@ public class CameraDrag : MonoBehaviour
             if (Drag == true)
             {
                 Camera.main.transform.position = Origin - Diference;
+            }
+            float scroll = Input.mouseScrollDelta.y;
+            if (scroll != 0)
+            {
+                if (Input.GetAxis("Fast Zoom") > 0)
+                {
+                    scroll *= 10;
+                }
+                this.zoom -= scroll * this.scrollRate;
+                if (this.zoom < this.minZoom)
+                {
+                    this.zoom = this.minZoom;
+                }
+                else if (this.zoom > this.maxZoom)
+                {
+                    this.zoom = this.maxZoom;
+                }
+                Camera.main.orthographicSize = this.zoom;
             }
         }
     }

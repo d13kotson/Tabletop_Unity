@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class Chat : MonoBehaviour
@@ -19,9 +16,7 @@ public class Chat : MonoBehaviour
     {
         this.position = -20;
         this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-#if UNITY_WEBGL
         this.controller.socket.chat = this;
-#endif
         this.content = this.gameObject.transform.Find("Chat").Find("Viewport").Find("Content").gameObject.transform;
         this.contentRect = this.content.gameObject.GetComponent<RectTransform>();
         this.input = this.gameObject.transform.Find("Input").gameObject.GetComponent<InputField>();
@@ -43,37 +38,22 @@ public class Chat : MonoBehaviour
         {
             user = this.controller.trainer.name;
         }
-#if UNITY_WEBGL
-        print(string.Format("{{\"type\": \"chat\", \"content\": {{\"display_name\": \"{0}\", \"message\": \"{1}\"}}}}", user, message));
         this.controller.socket.SendChatMessage(user, message);
-#endif
     }
 
     private void getMessages()
     {
-        string url = string.Empty;
-        if (this.controller.isGM)
+        this.controller.SendGetRequest(string.Format("api/messages/{0}", this.controller.isGM ? this.controller.game.id : this.controller.trainer.game), (request) =>
         {
-            url = "http://localhost/api/messages/" + this.controller.game.id;
-        }
-        else
-        {
-            url = "http://localhost/api/messages/" + this.controller.trainer.game;
-        }
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        request.SetRequestHeader("Authorization", string.Format("Token {0}", this.controller.authToken));
-        AsyncOperation response = request.SendWebRequest();
-        response.completed += (AsyncOperation obj) =>
-        {
-            if (request.responseCode == 200)
+            MessageList messages = JsonUtility.FromJson<MessageList>(string.Format("{{\"messages\": {0}}}", request.downloadHandler.text));
+            foreach (Message message in messages.messages)
             {
-                MessageList messages = JsonUtility.FromJson<MessageList>(string.Format("{{\"messages\": {0}}}", request.downloadHandler.text));
-                foreach (Message message in messages.messages)
-                {
-                    this.AddMessage(message.message, message.display_name);
-                }
+                this.AddMessage(message.message, message.display_name);
             }
-        };
+        }, (request) =>
+        {
+
+        });
     }
 
     public void ReceiveMessage(string content)

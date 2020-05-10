@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
@@ -11,11 +12,16 @@ public class Party : MonoBehaviour
 
     private GameController controller = default;
 
-    private void Start()
+    private Dictionary<int, TrainerStatus> trainers;
+    private Dictionary<int, PokemonStatus> pokemon;
+
+    private void Awake()
     {
         this.Disable();
         this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
         Transform canvas = GameObject.FindGameObjectWithTag("Canvas").GetComponent<Transform>();
+        this.trainers = new Dictionary<int, TrainerStatus>();
+        this.pokemon = new Dictionary<int, PokemonStatus>();
         if (this.controller.isGM)
         {
             int position = -20;
@@ -25,6 +31,7 @@ public class Party : MonoBehaviour
                 trainerStatus.GetComponent<Transform>().SetParent(canvas);
                 trainerStatus.GetComponent<TrainerStatus>().Set(trainer);
                 position = this.addButton(position, trainer.name, delegate { this.enableTrainerStats(trainerStatus); });
+                this.trainers.Add(trainer.id, trainerStatus.GetComponent<TrainerStatus>());
             }
             foreach (Trainer trainer in this.controller.game.trainer)
             {
@@ -34,6 +41,7 @@ public class Party : MonoBehaviour
                     pokemonStatus.GetComponent<Transform>().SetParent(canvas);
                     pokemonStatus.GetComponent<PokemonStatus>().Set(pokemon);
                     position = this.addButton(position, pokemon.name, delegate { this.enablePokemonStats(pokemonStatus); });
+                    this.pokemon.Add(pokemon.id, pokemonStatus.GetComponent<PokemonStatus>());
                 }
             }
         }
@@ -44,12 +52,42 @@ public class Party : MonoBehaviour
             trainerStatus.GetComponent<Transform>().SetParent(canvas);
             trainerStatus.GetComponent<TrainerStatus>().Set(this.controller.trainer);
             position = this.addButton(position, this.controller.trainer.name, delegate { this.enableTrainerStats(trainerStatus); });
+            this.trainers.Add(this.controller.trainer.id, trainerStatus.GetComponent<TrainerStatus>());
             foreach (Pokemon pokemon in this.controller.trainer.pokemon)
             {
                 GameObject pokemonStatus = Instantiate(this.pokemonStatus);
                 pokemonStatus.GetComponent<Transform>().SetParent(canvas);
                 pokemonStatus.GetComponent<PokemonStatus>().Set(pokemon);
                 position = this.addButton(position, pokemon.name, delegate { this.enablePokemonStats(pokemonStatus); });
+                this.pokemon.Add(pokemon.id, pokemonStatus.GetComponent<PokemonStatus>());
+            }
+        }
+        this.controller.RefreshActions.Add(() => this.Refresh());
+    }
+
+    private void Refresh()
+    {
+        Transform canvas = GameObject.FindGameObjectWithTag("Canvas").GetComponent<Transform>();
+        if (this.controller.isGM)
+        {
+            foreach (Trainer trainer in this.controller.game.trainer)
+            {
+                this.trainers[trainer.id].Set(trainer);
+            }
+            foreach (Trainer trainer in this.controller.game.trainer)
+            {
+                foreach (Pokemon pokemon in trainer.pokemon)
+                {
+                    this.pokemon[pokemon.id].Set(pokemon);
+                }
+            }
+        }
+        else
+        {
+            this.trainers[this.controller.trainer.id].Set(this.controller.trainer);
+            foreach (Pokemon pokemon in this.controller.trainer.pokemon)
+            {
+                this.pokemon[pokemon.id].Set(pokemon);
             }
         }
     }
@@ -78,6 +116,7 @@ public class Party : MonoBehaviour
 
     public void Enable()
     {
+        this.controller.CloseScreens();
         bool value = !this.gameObject.activeSelf;
         if (value)
         {

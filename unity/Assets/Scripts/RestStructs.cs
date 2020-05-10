@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 #pragma warning disable 0649
 
 [Serializable]
@@ -33,9 +34,10 @@ internal struct UserInfo
 [Serializable]
 internal struct MapToken
 {
-    public int id;
-    public int x;
-    public int y;
+    public int tokenID;
+    public int imageID;
+    public float x;
+    public float y;
     public int width;
     public int height;
 }
@@ -44,15 +46,15 @@ internal struct MapToken
 internal struct MapState
 {
     public string background;
-    public MapToken[] tokens;
+    public Dictionary<int, MapToken> tokens;
 }
 
 [Serializable]
 internal struct UpdateToken
 {
     public int tokenID;
-    public int tokenX;
-    public int tokenY;
+    public float tokenX;
+    public float tokenY;
 }
 
 [Serializable]
@@ -69,6 +71,12 @@ internal struct SpeciesAttack
     public Attack attack;
     public int level;
     public int species;
+}
+
+[Serializable]
+internal struct SpeciesAttackList
+{
+    public SpeciesAttack[] list;
 }
 
 [Serializable]
@@ -134,11 +142,51 @@ internal struct PokemonAttack
 }
 
 [Serializable]
+internal struct Nature
+{
+    public string name;
+    public int constitution;
+    public int attack;
+    public int defense;
+    public int special_attack;
+    public int special_defense;
+    public int speed;
+}
+
+[Serializable]
 internal struct Pokemon
 {
     public int id;
     public PokemonAttack[] pokemon_attack;
     public Species species;
+    public string name;
+    public Nature nature;
+    public int level;
+    public int experience;
+    public bool in_party;
+    public int constitution;
+    public int attack;
+    public int defense;
+    public int special_attack;
+    public int special_defense;
+    public int attack_cs;
+    public int defense_cs;
+    public int special_attack_cs;
+    public int special_defense_cs;
+    public int speed_cs;
+    public int speed;
+    public int current_hp;
+    public string ability;
+    public int trainer;
+    public int game;
+    public TokenStruct token;
+}
+
+[Serializable]
+internal struct PokemonSimple
+{
+    public int id;
+    public int species;
     public string name;
     public int nature;
     public int level;
@@ -150,10 +198,16 @@ internal struct Pokemon
     public int special_attack;
     public int special_defense;
     public int speed;
+    public int attack_cs;
+    public int defense_cs;
+    public int special_attack_cs;
+    public int special_defense_cs;
+    public int speed_cs;
     public int current_hp;
     public string ability;
     public int trainer;
     public int game;
+    public int token;
 }
 
 [Serializable]
@@ -197,7 +251,7 @@ internal struct TrainerFeature
 }
 
 [Serializable]
-internal struct Item
+internal struct ItemStruct
 {
     public int id;
     public string name;
@@ -206,10 +260,26 @@ internal struct Item
 }
 
 [Serializable]
+internal struct ItemList
+{
+    public ItemStruct[] list;
+}
+
+[Serializable]
 internal struct TrainerItem
 {
     public int id;
-    public Item item;
+    public ItemStruct item;
+    public string item_name;
+    public int number;
+    public int trainer;
+}
+
+[Serializable]
+internal struct TrainerItemSimple
+{
+    public int id;
+    public int item;
     public string item_name;
     public int number;
     public int trainer;
@@ -232,6 +302,7 @@ internal struct Trainer
     public TrainerFeature[] trainer_feature;
     public TrainerItem[] item;
     public TrainerAttack[] trainer_attack;
+    public TokenStruct token;
     public string name;
     public int level;
     public int money;
@@ -258,6 +329,11 @@ internal struct Trainer
     public int special_attack;
     public int special_defense;
     public int speed;
+    public int attack_cs;
+    public int defense_cs;
+    public int special_attack_cs;
+    public int special_defense_cs;
+    public int speed_cs;
     public int current_hp;
     public int game;
     public int user;
@@ -291,15 +367,35 @@ internal struct MessageList
 [Serializable]
 internal struct BackgroundStruct
 {
+    public int id;
     public int gm;
     public string title;
-    public int image;
+    public ImageStruct image;
 }
 
 [Serializable]
 internal struct BackgroundList
 {
     public BackgroundStruct[] list;
+}
+
+[Serializable]
+internal struct TokenStruct
+{
+    public int id;
+    public int user;
+    public string title;
+    public ImageStruct image;
+}
+
+[Serializable]
+internal struct ImageStruct
+{
+    public int id;
+    public string name;
+    public string file;
+    public int height;
+    public int width;
 }
 
 #pragma warning restore 0649

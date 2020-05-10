@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class TrainerStatus : MonoBehaviour
@@ -9,7 +10,7 @@ public class TrainerStatus : MonoBehaviour
     private GameObject skillsTab;
     private GameObject movesTab;
 
-    void Start()
+    void Awake()
     {
         this.Disable();
         this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -20,14 +21,16 @@ public class TrainerStatus : MonoBehaviour
         rect.sizeDelta = new Vector2(470, -100);
     }
 
-    void Update()
-    {
-        
-    }
-
     internal void Set(Trainer trainer)
     {
         this.trainer = trainer;
+        this.UpdateTrainer();
+        this.setTokenSprite();
+        this.ShowStats();
+    }
+
+    private void UpdateTrainer()
+    {
         Transform content = this.gameObject.transform.Find("Viewport").Find("Content");
         content.Find("Name").gameObject.GetComponent<Text>().text = this.trainer.name;
         this.statsTab = content.Find("StatsPanel").gameObject;
@@ -36,7 +39,24 @@ public class TrainerStatus : MonoBehaviour
         this.skillsTab.GetComponent<TrainerSkillsTab>().Set(this.trainer);
         this.movesTab = content.Find("MovesPanel").gameObject;
         this.movesTab.GetComponent<TrainerMovesTab>().Set(this.trainer);
-        this.ShowStats();
+    }
+
+    private void setTokenSprite()
+    {
+        this.controller.SendTextureRequest(string.Format("api/image/{0}", this.trainer.token.image.id), (request) =>
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(request);
+            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            this.gameObject.transform.Find("Viewport").Find("Content").Find("AddToken").GetComponent<Image>().sprite = sprite;
+        }, (request) =>
+        {
+
+        });
+    }
+
+    public void AddToken()
+    {
+        this.controller.socket.AddToken(this.trainer.token.id, Camera.main.transform.position.x, Camera.main.transform.position.y);
     }
 
     public void ShowStats()
@@ -70,8 +90,44 @@ public class TrainerStatus : MonoBehaviour
         float multiple = int.Parse(newCS) / 2;
     }
 
+    public void UpdateAttack(InputField input)
+    {
+        int newCS = int.Parse(input.text);
+        this.trainer.attack_cs = newCS;
+        this.UpdateTrainer();
+    }
+
+    public void UpdateDefense(InputField input)
+    {
+        int newCS = int.Parse(input.text);
+        this.trainer.defense_cs = newCS;
+        this.UpdateTrainer();
+    }
+
+    public void UpdateSpecialAttack(InputField input)
+    {
+        int newCS = int.Parse(input.text);
+        this.trainer.special_attack_cs = newCS;
+        this.UpdateTrainer();
+    }
+
+    public void UpdateSpecialDefense(InputField input)
+    {
+        int newCS = int.Parse(input.text);
+        this.trainer.special_defense_cs = newCS;
+        this.UpdateTrainer();
+    }
+
+    public void UpdateSpeed(InputField input)
+    {
+        int newCS = int.Parse(input.text);
+        this.trainer.speed_cs = newCS;
+        this.UpdateTrainer();
+    }
+
     public void Enable()
     {
+        this.controller.CloseScreens();
         bool value = !this.gameObject.activeSelf;
         if (value)
         {
