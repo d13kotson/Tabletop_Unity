@@ -239,6 +239,9 @@ internal class Socket
     private void AddToken(string content)
     {
         MapToken mapToken = JsonUtility.FromJson<MapToken>(content);
+		if(this.mapState.tokens == null) {
+			this.mapState.tokens = new Dictionary<int, MapToken>();
+		}
         this.mapState.tokens.Add(mapToken.tokenID, mapToken);
         this.controller.AddToken(mapToken);
     }

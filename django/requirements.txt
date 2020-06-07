@@ -4,9 +4,11 @@ async-timeout==3.0.1
 attrs==19.3.0
 autobahn==20.1.2
 Automat==0.8.0
+certifi==2020.4.5.1
 cffi==1.13.2
 channels==2.4.0
 channels-redis==2.4.1
+chardet==3.0.4
 constantly==15.1.0
 cryptography==2.8
 daphne==2.4.1
@@ -18,6 +20,7 @@ hiredis==1.0.1
 hyperlink==19.0.0
 idna==2.8
 incremental==17.5.0
+lxml==4.5.0
 msgpack==0.6.2
 psycopg2-binary==2.8.4
 pyasn1==0.4.8
@@ -25,11 +28,14 @@ pyasn1-modules==0.2.8
 pycparser==2.19
 PyHamcrest==2.0.0
 pyOpenSSL==19.1.0
+PyPDF2==1.26.0
 pytz==2019.3
+requests==2.23.0
 service-identity==18.1.0
 six==1.14.0
 sqlparse==0.3.0
 Twisted==19.10.0
 txaio==18.8.1
+urllib3==1.25.9
 whitenoise==5.0.1
 zope.interface==4.7.1

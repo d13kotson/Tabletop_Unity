@@ -270,7 +270,7 @@ class TokenDetail(generics.RetrieveAPIView):
 def image(request, pk):
     image = get_object_or_404(Image, id=pk)
     try:
-        with open(get_image_url(image.id), 'rb') as image_content:
+        with open(get_image_url(image.path), 'rb') as image_content:
             return HttpResponse(image_content.read(), content_type='image/png')
     except:
         return HttpResponse(status=404)
@@ -289,7 +289,7 @@ def upload_image(request):
             width=width
         )
         image.save()
-        image_path = get_image_url(image.id)
+        image_path = get_image_url(image.path)
         Path(os.path.dirname(image_path)).mkdir(parents=True, exist_ok=True)
         image_file = open(image_path, 'wb+')
         image_file.write(array.array('B', image_data))
@@ -297,5 +297,5 @@ def upload_image(request):
     return HttpResponse();
 
 
-def get_image_url(image_id):
-    return f'media/images/{image_id}.png'
+def get_image_url(image_path):
+    return f'media/images/{image_path}'

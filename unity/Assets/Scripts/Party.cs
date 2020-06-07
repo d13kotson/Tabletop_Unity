@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class Party : MonoBehaviour
 {
     public GameObject button = default;
-    public Transform viewPort = default;
+    public RectTransform viewPort = default;
     public GameObject pokemonStatus = default;
     public GameObject trainerStatus = default;
 
@@ -111,6 +111,8 @@ public class Party : MonoBehaviour
         buttonRect.sizeDelta = new Vector2(0, 40);
         button.GetComponentInChildren<Text>().text = name;
         button.GetComponent<Button>().onClick.AddListener(function);
+		float viewPortWidth = this.viewPort.sizeDelta.x;
+		this.viewPort.sizeDelta = new Vector2(viewPortWidth, -position + 20);
         return position - 40;
     }
 

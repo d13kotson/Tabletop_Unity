@@ -393,7 +393,7 @@ internal struct ImageStruct
 {
     public int id;
     public string name;
-    public string file;
+    public string path;
     public int height;
     public int width;
 }

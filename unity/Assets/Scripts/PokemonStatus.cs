@@ -90,6 +90,19 @@ public class PokemonStatus : MonoBehaviour
         this.movesTab.SetActive(false);
     }
 
+	public void UpdateHP(InputField input)
+	{
+		int newHP = int.Parse(input.text);
+		this.pokemon.current_hp = newHP;
+		this.controller.SendGetRequest(string.Format("api/pokemon/{0}", this.pokemon.id), (pokemonRequest) => {
+			PokemonSimple pokemon = JsonUtility.FromJson<PokemonSimple>(pokemonRequest.downloadHandler.text);
+			pokemon.current_hp = newHP;
+			this.controller.SendPutRequest(string.Format("api/pokemon/{0}", pokemon.id), JsonUtility.ToJson(pokemon), (request) => { }, (request) => { });
+		}, (request) => {
+
+		});
+	}
+
     public void UpdateAttack(InputField input)
     {
         int newCS = int.Parse(input.text);

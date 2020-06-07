@@ -6,6 +6,31 @@ import random
 import re
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = '__all__'
+
+
+class BackgroundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Background
+        fields = '__all__'
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+    class Meta:
+        model = Token
+        fields = '__all__'
+
+
+class DamageBaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DamageBase
+        fields = '__all__'
+
+
 class TypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Type
@@ -19,6 +44,9 @@ class TypeEffectivenessSerializer(serializers.ModelSerializer):
 
 
 class AttackSerializer(serializers.ModelSerializer):
+    damage_base = DamageBaseSerializer()
+    type = TypeSerializer()
+
     class Meta:
         model = Attack
         fields = '__all__'
@@ -80,6 +108,8 @@ class SpeciesAttackSerializer(serializers.ModelSerializer):
 
 class SpeciesSerializer(serializers.ModelSerializer):
     species_attack = SpeciesAttackSerializer(many=True, read_only=True)
+    type_1 = TypeSerializer()
+    type_2 = TypeSerializer()
 
     class Meta:
         model = Species
@@ -110,6 +140,7 @@ class PokemonSerializer(serializers.ModelSerializer):
     pokemon_attack = PokemonAttackSerializer(many=True, read_only=True)
     species = SpeciesSerializer()
     nature = NatureSerializer()
+    token = TokenSerializer()
     total_constitution = serializers.SerializerMethodField()
     total_attack = serializers.SerializerMethodField()
     total_defense = serializers.SerializerMethodField()
@@ -153,7 +184,7 @@ class PokemonSimpleSerializer(serializers.ModelSerializer):
         instance.trainer = validated_data.get('trainer', instance.trainer)
         instance.species = validated_data.get('species', instance.species)
         instance.nature = validated_data.get('nature', instance.nature)
-        instance.inParty = validated_data.get('inParty', instance.inParty)
+        instance.in_party = validated_data.get('in_party', instance.in_party)
         instance.constitution = validated_data.get('constitution', instance.constitution)
         instance.attack = validated_data.get('attack', instance.attack)
         instance.defense = validated_data.get('defense', instance.defense)
@@ -335,22 +366,4 @@ class UserInfoSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Message
-        fields = '__all__'
-
-
-class ImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Image
-        fields = '__all__'
-
-
-class BackgroundSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Background
-        fields = '__all__'
-
-
-class TokenSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Token
         fields = '__all__'

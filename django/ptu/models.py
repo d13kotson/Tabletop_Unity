@@ -5,6 +5,34 @@ from django.contrib.auth.models import User
 from math import floor
 
 
+class Image(models.Model):
+    name = models.CharField(max_length=200)
+    path = models.CharField(max_length=200)
+    height = models.IntegerField()
+    width = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class Background(models.Model):
+    gm = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=20)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+
+class Token(models.Model):
+    user = models.ForeignKey(User, related_name='gm', on_delete=models.CASCADE)
+    title = models.CharField(max_length=20)
+    image = models.ForeignKey(Image, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+
 class Game(models.Model):
     title = models.CharField(max_length=20)
     gm = models.ForeignKey(User, related_name='game', on_delete=models.CASCADE)
@@ -128,6 +156,16 @@ class Species(models.Model):
     sky = models.CharField(max_length=10, blank=True)
     levitate = models.CharField(max_length=10, blank=True)
     teleport = models.CharField(max_length=10, blank=True)
+    tm_moves = models.TextField(blank=True, null=True)
+    egg_moves = models.TextField(blank=True, null=True)
+    tutor_moves = models.TextField(blank=True, null=True)
+    basic_abilities = models.CharField(max_length=200, blank=True, null=True)
+    adv_abilities = models.CharField(max_length=200, blank=True, null=True)
+    high_ability = models.CharField(max_length=100, blank=True, null=True)
+    size = models.CharField(max_length=50)
+    weight = models.IntegerField()
+    egg_groups = models.CharField(max_length=200, blank=True, null=True)
+
 
     def __str__(self):
         return self.name
@@ -136,16 +174,16 @@ class Species(models.Model):
 class Evolution(models.Model):
     base = models.ForeignKey(Species, related_name="base", on_delete=models.CASCADE)
     evolved = models.ForeignKey(Species, related_name="evolved", on_delete=models.CASCADE)
-    level = models.IntegerField()
+    requirements = models.CharField(max_length=200)
 
     def __str__(self):
         return self.evolved.name
 
 
 class DamageBase(models.Model):
-    num_die = models.IntegerField()
-    die_num = models.IntegerField()
-    add = models.IntegerField()
+    num_die = models.IntegerField(default=1)
+    die_num = models.IntegerField(default=1)
+    add = models.IntegerField(default=0)
 
     def __str__(self):
         return f'Damage Base {self.id}'
@@ -156,7 +194,7 @@ class Attack(models.Model):
     type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='attack')
     frequency = models.CharField(max_length=20)
     ac = models.IntegerField()
-    damage_base = models.ForeignKey(DamageBase, on_delete=models.CASCADE)
+    damage_base = models.ForeignKey(DamageBase, on_delete=models.CASCADE, null=True, blank=True)
     attack_class = models.CharField(max_length=20)
     range = models.CharField(max_length=60)
     effect = models.TextField(max_length=400)
@@ -203,13 +241,14 @@ class Pokemon(models.Model):
     special_attack = models.IntegerField()
     special_defense = models.IntegerField()
     speed = models.IntegerField()
-    attack_cs = models.IntegerField()
-    defense_cs = models.IntegerField()
-    special_attack_cs = models.IntegerField()
-    special_defense_cs = models.IntegerField()
-    speed_cs = models.IntegerField()
+    attack_cs = models.IntegerField(default=0)
+    defense_cs = models.IntegerField(default=0)
+    special_attack_cs = models.IntegerField(default=0)
+    special_defense_cs = models.IntegerField(default=0)
+    speed_cs = models.IntegerField(default=0)
     current_hp = models.IntegerField(default=0)
     ability = models.CharField(max_length=40, null=True, blank=True)
+    token = models.ForeignKey(Token, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -367,27 +406,3 @@ class Message(models.Model):
 
     def __str__(self):
         return self.message
-
-
-class Image(models.Model):
-    name = models.CharField(max_length=200)
-    height = models.IntegerField()
-    width = models.IntegerField()
-
-
-class Background(models.Model):
-    gm = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=20)
-    image = models.ForeignKey(Image, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title
-
-
-class Token(models.Model):
-    user = models.ForeignKey(User, related_name='gm', on_delete=models.CASCADE)
-    title = models.CharField(max_length=20)
-    image = models.ForeignKey(Image, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.title

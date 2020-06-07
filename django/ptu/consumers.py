@@ -21,7 +21,7 @@ class PTUConsumer(WebsocketConsumer):
         if state is None:
             self.channel_layer.state = {
                 'background': '',
-                'tokens': [],
+                'tokens': dict(),
             }
         self.accept()
 
@@ -73,32 +73,36 @@ class PTUConsumer(WebsocketConsumer):
         self.channel_layer.state['background'] = content
 
     def add_token(self, event):
-        token = Token.objects.get(id=event['content'])
+        token = Token.objects.get(id=event['content']['id'])
 
         self.send(text_data=json.dumps({
-            'type': 'addToken',
-            'content': {
-                'src': token.id,
-                'width': token.width,
-                'height': token.height
-            }
+            'type': 'add_token',
+            'content': json.dumps({
+                'imageID': token.image.id,
+                'tokenID': token.id,
+                'width': token.image.width,
+                'height': token.image.height,
+                'x': event['content']['x'],
+                'y': event['content']['y']
+            })
         }))
 
     def add_token_state(self, content):
-        token = Token.objects.get(id=content)
-        self.channel_layer.state['tokens'].append({
-            'id': token.id,
-            'x': 0,
-            'y': 0,
-            'width': token.width,
-            'height': token.height
-        })
+        token = Token.objects.get(id=content['id'])
+        self.channel_layer.state['tokens'][token.id] = {
+            'imageID': token.image.id,
+            'tokenID': token.id,
+            'x': content['x'],
+            'y': content['y'],
+            'width': token.image.width,
+            'height': token.image.height
+        }
 
     def update_token(self, event):
         content = event['content']
 
         self.send(text_data=json.dumps({
-            'type': 'updateToken',
+            'type': 'update_token',
             'content': json.dumps(content)
         }))
 
@@ -111,7 +115,7 @@ class PTUConsumer(WebsocketConsumer):
         self.channel_layer.state = event['content']
 
         self.send(text_data=json.dumps({
-            'type': 'updateState',
+            'type': 'update_state',
             'content': json.dumps(self.channel_layer.state)
         }))
 
@@ -119,7 +123,7 @@ class PTUConsumer(WebsocketConsumer):
         content = self.channel_layer.state
 
         self.send(text_data=json.dumps({
-            'type': 'updateState',
+            'type': 'update_state',
             'content': json.dumps(content)
         }))
 
@@ -130,7 +134,7 @@ class PTUConsumer(WebsocketConsumer):
         }
 
         self.send(text_data=json.dumps({
-            'type': 'updateState',
+            'type': 'update_state',
             'content': self.channel_layer.state
         }))
 
