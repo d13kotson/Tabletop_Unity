@@ -23,10 +23,10 @@ public class PokemonMovesTab : MonoBehaviour
             movePanel.transform.SetParent(content);
             RectTransform rect = movePanel.GetComponent<RectTransform>();
             rect.anchoredPosition = new Vector2(0, position);
-            rect.sizeDelta = new Vector2(0, 100);
+            rect.sizeDelta = new Vector2(0, 120);
             movePanel.GetComponentInChildren<Text>().text = name;
-            movePanel.GetComponent<MovePanel>().Set(attack.attack);
-            position -= 100;
+            movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
+            position -= 120;
         }
     }
 }

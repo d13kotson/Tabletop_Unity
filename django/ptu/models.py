@@ -45,6 +45,7 @@ class Trainer(models.Model):
     name = models.CharField(max_length=20)
     game = models.ForeignKey(Game, related_name='trainer', on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='trainer', on_delete=models.CASCADE)
+    token = models.ForeignKey(Token, related_name='trainer', on_delete=models.CASCADE, null=True, blank=True)
     level = models.IntegerField(default=1)
     money = models.IntegerField(default=5000)
     acrobatics = models.IntegerField(default=2)
@@ -70,11 +71,45 @@ class Trainer(models.Model):
     special_attack = models.IntegerField(default=5)
     special_defense = models.IntegerField(default=5)
     speed = models.IntegerField(default=5)
+    attack_cs = models.IntegerField(default=0)
+    defense_cs = models.IntegerField(default=0)
+    special_attack_cs = models.IntegerField(default=0)
+    special_defense_cs = models.IntegerField(default=0)
+    speed_cs = models.IntegerField(default=0)
     current_hp = models.IntegerField(default=0)
     current_ap = models.IntegerField(default=5)
 
     def __str__(self):
         return self.name
+
+    def total_stat(self, stat, cs):
+        if stat > 0:
+            modifier = (cs + 2) / 2
+        elif stat < 0:
+            modifier = 2 / (2 - cs)
+        else:
+            modifier = 1
+        return stat * modifier
+
+    @property
+    def total_attack(self):
+        return self.total_stat(self.attack, self.attack_cs)
+
+    @property
+    def total_defense(self):
+        return self.total_stat(self.defense, self.defense_cs)
+
+    @property
+    def total_special_attack(self):
+        return self.total_stat(self.special_attack, self.special_attack_cs)
+
+    @property
+    def total_special_defense(self):
+        return self.total_stat(self.special_defense, self.special_defense_cs)
+
+    @property
+    def total_speed(self):
+        return self.total_stat(self.speed, self.speed_cs)
 
 
 class Note(models.Model):
@@ -117,6 +152,7 @@ class Type(models.Model):
 class TypeEffectiveness(models.Model):
     attack = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='attack_type')
     defend = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, blank=True, related_name='defend_type')
+    value = models.FloatField(default=1)
 
     def __str__(self):
         return f'{self.attack} > {self.defend}'
@@ -248,7 +284,7 @@ class Pokemon(models.Model):
     speed_cs = models.IntegerField(default=0)
     current_hp = models.IntegerField(default=0)
     ability = models.CharField(max_length=40, null=True, blank=True)
-    token = models.ForeignKey(Token, on_delete=models.CASCADE)
+    token = models.ForeignKey(Token, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.name

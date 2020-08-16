@@ -2,19 +2,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Chat : MonoBehaviour
+public class Chat : Window
 {
-    private GameController controller;
     private InputField input;
     private Button send;
-    private int position;
     public Transform content = default;
     private RectTransform contentRect;
     public GameObject message = default;
 
     void Start()
     {
-        this.position = -20;
         this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
         this.controller.socket.chat = this;
         this.content = this.gameObject.transform.Find("Chat").Find("Viewport").Find("Content").gameObject.transform;
@@ -66,16 +63,10 @@ public class Chat : MonoBehaviour
     {
         GameObject messageObject = Instantiate(this.message);
         messageObject.transform.Find("UserName").gameObject.GetComponent<Text>().text = displayName;
-        messageObject.transform.Find("Message").gameObject.GetComponent<Text>().text = message;
-
+		GameObject textField = messageObject.transform.Find("Message").gameObject;
+		textField.GetComponent<Text>().text = message;
         messageObject.transform.SetParent(this.content);
-        RectTransform rect = messageObject.GetComponent<RectTransform>();
-        rect.anchoredPosition = new Vector2(0, position);
-        rect.sizeDelta = new Vector2(184, 40);
-        position -= 40;
-        if (this.contentRect.sizeDelta.y < Math.Abs(position))
-        {
-            this.contentRect.sizeDelta = new Vector2(this.contentRect.sizeDelta.x, Math.Abs(position));
-        }
-    }
+		Canvas.ForceUpdateCanvases();
+		this.gameObject.GetComponentInChildren<ScrollRect>().normalizedPosition = Vector2.zero;
+	}
 }

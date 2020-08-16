@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class PokemonStatus : MonoBehaviour
+public class PokemonStatus : Window
 {
     private Pokemon pokemon;
-    private GameController controller;
     private GameObject statsTab;
     private GameObject skillsTab;
     private GameObject movesTab;
@@ -185,7 +183,7 @@ public class PokemonStatus : MonoBehaviour
 
     public void AddToken()
     {
-        this.controller.socket.AddToken(this.pokemon.token.id, Camera.main.transform.position.x, Camera.main.transform.position.y);
+        this.controller.socket.AddToken(this.pokemon.token.id, Camera.main.transform.position.x, Camera.main.transform.position.y, TokenType.pokemon, this.pokemon.id);
     }
 
     public void AddExp()
@@ -222,25 +220,5 @@ public class PokemonStatus : MonoBehaviour
         {
 
         }
-    }
-
-    public void Enable()
-    {
-        this.controller.CloseScreens();
-        bool value = !this.gameObject.activeSelf;
-        if (value)
-        {
-            this.controller.OpenScreens.Add(this.gameObject);
-        }
-        else
-        {
-            this.controller.OpenScreens.Remove(this.gameObject);
-        }
-        this.gameObject.SetActive(value);
-    }
-
-    public void Disable()
-    {
-        this.gameObject.SetActive(false);
     }
 }

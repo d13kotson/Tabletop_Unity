@@ -81,6 +81,7 @@ class PokemonInfoTab extends TabbedComponent {
 				pokemon = data;
 			});
 		let addExp = parseInt(this.tabRefs["expInput"].current.value);
+		this.tabRefs["expInput"].current.value = 0;
 		pokemon.experience += addExp;
 		fetch("/api/pokemon/" + pokemon.id + "/", {
 		  method: 'PUT',

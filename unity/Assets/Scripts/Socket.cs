@@ -142,9 +142,9 @@ internal class Socket
         this.client.SendMessage("update_token", string.Format("{{\"tokenID\": {0}, \"tokenX\": {1}, \"tokenY\": {2}}}", mapID, x, y));
     }
 
-    public void AddToken(int tokenID, float x, float y)
+    public void AddToken(int tokenID, float x, float y, TokenType type, int id)
     {
-        this.client.SendMessage("add_token", string.Format("{{\"id\": {0}, \"x\": {1}, \"y\": {2}}}", tokenID, x, y));
+        this.client.SendMessage("add_token", string.Format("{{\"tokenID\": {0}, \"x\": {1}, \"y\": {2}, \"tokenType\": {3}, \"repID\": {4}}}", tokenID, x, y, (int)type, id));
     }
 
     public void DeleteToken(int tokenID)
@@ -161,6 +161,18 @@ internal class Socket
     {
         this.client.SendMessage("roll", string.Format("{{\"display_name\": \"{0}\", \"num_die\": {1}, \"die_num\": {2}, \"add\": {3}}}", user, numDie, dieNum, add));
     }
+
+	public void Attack(int attackerID, TokenType attackerType, int defenderID, TokenType defenderType, int attackID) {
+		string displayName = this.controller.isGM ? "GM" : this.controller.trainer.name;
+		this.client.SendMessage("attack", string.Format("{{" +
+			"\"display_name\": \"{0}\", " +
+			"\"attacker_id\": {1}, " +
+			"\"attacker_type\": \"{2}\", " +
+			"\"defender_id\": {3}, " +
+			"\"defender_type\": \"{4}\", " +
+			"\"attack_id\": {5}" +
+   "}}", displayName, attackerID, attackerType, defenderID, defenderType, attackID));
+	}
 
     public void ParseMessage(string content)
     {
@@ -219,7 +231,7 @@ internal class Socket
             {
                 if (!string.IsNullOrEmpty(tokenSplit))
                 {
-                    string tokenString = tokenSplit.Trim(',');
+                    string tokenString = tokenSplit.Trim(',').Trim();
                     int id = int.Parse(tokenString.Substring(0, tokenString.IndexOf(':')).Trim('\"'));
                     string mapTokenString = tokenString.Substring(tokenString.IndexOf(": {") + 2) + "}";
                     MapToken token = JsonUtility.FromJson<MapToken>(mapTokenString);

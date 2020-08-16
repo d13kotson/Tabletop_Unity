@@ -1,6 +1,7 @@
-from .models import Attack, DamageBase, Game, Message, Pokemon, Token, Trainer
+from .models import Attack, DamageBase, Game, Message, Pokemon, Token, Trainer, TypeEffectiveness
 from channels.generic.websocket import WebsocketConsumer
 from asgiref.sync import async_to_sync
+from math import floor
 import json
 import re
 import random
@@ -42,6 +43,8 @@ class PTUConsumer(WebsocketConsumer):
             self.add_token_state(content)
         elif type == 'update_token':
             self.update_token_state(content)
+        elif type == 'delete_token':
+            self.delete_token_state(content)
         elif type == 'chat':
             return self.chat(content)
         elif type == 'roll':
@@ -73,7 +76,7 @@ class PTUConsumer(WebsocketConsumer):
         self.channel_layer.state['background'] = content
 
     def add_token(self, event):
-        token = Token.objects.get(id=event['content']['id'])
+        token = Token.objects.get(id=event['content']['tokenID'])
 
         self.send(text_data=json.dumps({
             'type': 'add_token',
@@ -83,19 +86,25 @@ class PTUConsumer(WebsocketConsumer):
                 'width': token.image.width,
                 'height': token.image.height,
                 'x': event['content']['x'],
-                'y': event['content']['y']
+                'y': event['content']['y'],
+                'tokenType': event['content']['tokenType'],
+                'repID': event['content']['repID'],
+                'owner': token.user.id
             })
         }))
 
     def add_token_state(self, content):
-        token = Token.objects.get(id=content['id'])
+        token = Token.objects.get(id=content['tokenID'])
         self.channel_layer.state['tokens'][token.id] = {
             'imageID': token.image.id,
             'tokenID': token.id,
             'x': content['x'],
             'y': content['y'],
             'width': token.image.width,
-            'height': token.image.height
+            'height': token.image.height,
+            'tokenType': content['tokenType'],
+            'repID': content['repID'],
+            'owner': token.user
         }
 
     def update_token(self, event):
@@ -110,6 +119,17 @@ class PTUConsumer(WebsocketConsumer):
         token = self.channel_layer.state['tokens'][int(content['tokenID'])]
         token['x'] = content['tokenX']
         token['y'] = content['tokenY']
+
+    def delete_token(self, event):
+        content = event['content']
+
+        self.send(text_data=json.dumps({
+            'type': 'delete_token',
+            'content': json.dumps(content)
+        }))
+
+    def delete_token_state(self, content):
+        self.channel_layer.state['tokens'].pop(content)
 
     def update_state(self, event):
         self.channel_layer.state = event['content']
@@ -191,6 +211,7 @@ class PTUConsumer(WebsocketConsumer):
         attacker_type = content['attacker_type']
         defender_id = content['defender_id']
         defender_type = content['defender_type']
+        attack_id = content['attack_id']
         attacker = None
         defender = None
         if attacker_type == 'trainer':
@@ -201,8 +222,9 @@ class PTUConsumer(WebsocketConsumer):
             defender = Trainer.objects.get(pk=defender_id)
         else:
             defender = Pokemon.objects.get(pk=defender_id)
+        attack = Attack.objects.get(pk=attack_id)
 
-        message = self.roll_damage(1, 2, 3, 4, 5, 6)
+        message = self.roll_damage(attack, attacker, defender)
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
@@ -245,24 +267,51 @@ class PTUConsumer(WebsocketConsumer):
             message += '+'.join(rolls) + '+' + str(add) + '=' + str(sum)
         return message
 
-    def roll_damage(self, attack_id, attacker_type, attack, defender_type_1, defender_type_2, defense):
-        attack = Attack.objects.get(pk=attack_id)
-        stab = False
+    def roll_damage(self, attack, attacker, defender):
+        hit_roll = random.randint(1, 20)
+        if attack.attack_class == 'Status':
+            return f'Rolled a {hit_roll} to hit.'
         db_id = attack.damage_base.id
-        if attacker_type == attack.type.id:
-            stab = True
-            db_id += 2
+        if type(attacker) is Pokemon:
+            if attacker.type_1.id == attack.type.id or attacker.type_2.id == attack.type.id:
+                db_id += 2
 
-        crit = False
         db = DamageBase.objects.get(pk=db_id)
         num_die = db.num_die
         die_num = db.die_num
         add = db.add
-        hit_roll = random.randint(1, 20)
-        if hit_roll == 20:
-            crit = True
-            num_die *= 2
-
+        effectiveness = 1
+        if Attack.type is not None:
+            if type(defender) is Pokemon:
+                effectiveness_1 = 1
+                effectiveness_2 = 1
+                if defender.species.type_1 is not None:
+                    try:
+                        effectiveness_1 = TypeEffectiveness.objects.get(attack=attack.type, defend=defender.species.type_1).value
+                    except TypeEffectiveness.DoesNotExist:
+                        pass
+                if defender.species.type_2 is not None:
+                    try:
+                        effectiveness_2 = TypeEffectiveness.objects.get(attack=attack.type, defend=defender.species.type_2).value
+                    except TypeEffectiveness.DoesNotExist:
+                        pass
+                if effectiveness_1 == 0 or effectiveness_2 == 0:
+                    effectiveness = 0
+                elif effectiveness_1 == 1:
+                    if effectiveness_2 == 1.5:
+                        effectiveness = 1.5
+                    elif effectiveness_2 == 0.5:
+                            effectiveness = 0.5
+                if effectiveness_1 == 1.5:
+                    if effectiveness_2 == 1.5:
+                        effectiveness = 2
+                    elif effectiveness_2 == 1:
+                            effectiveness = 1.5
+                if effectiveness_1 == 0.5:
+                    if effectiveness_2 == 1:
+                        effectiveness = 0.5
+                    elif effectiveness_2 == 0.5:
+                            effectiveness = 0.25
         sum = 0
         rolls = list()
         for i in range(num_die):
@@ -270,11 +319,24 @@ class PTUConsumer(WebsocketConsumer):
             rolls.append(str(random_int))
             sum += random_int
         sum += add
-        sum += attack
-        sum -= defense
+        attack_damage = 0
+        defend_damage = 0
+        if attack.attack_class == 'Physical':
+            attack_damage = attacker.total_attack
+            sum += attack_damage
+            defend_damage = defender.total_defense
+            sum -= defend_damage
+        elif attack.attack_class == 'Special':
+            attack_damage = attacker.total_special_attack
+            sum += attack_damage
+            defend_damage = defender.total_special_defense
+            sum -= defend_damage
 
-        message = f'''Rolled a {hit_roll} to hit.{" Critical Hit!" if crit else ""}
-{"+".join(rolls)}+{add}+{attack}-{defense}={sum} damage.'''
+        sum *= effectiveness
+
+        message = f'''Rolled a {hit_roll} to hit.
+It will deal {floor(sum)} damage.
+If Critical add {num_die * die_num} damage!'''
         return message
 
 

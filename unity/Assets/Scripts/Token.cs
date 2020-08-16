@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.EventSystems;
 
 public class Token : MonoBehaviour
 {
@@ -11,50 +12,66 @@ public class Token : MonoBehaviour
     public GameObject Canvas;
     public GameObject RightClickMenu;
     private GameObject StatusPanel;
+	private int owner;
+
+	private int repID;
+	private TokenType tokenType;
 
     private void Awake()
     {
         this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+	}
+
+	public void OnMouseDown()
+    {
+		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+			this.isDragging = true;
+			this.controller.IsDragging = true;
+		}
     }
 
-    public void OnMouseDown()
-    {
-        this.isDragging = true;
-        this.controller.IsDragging = true;
-    }
+    public void OnMouseUp() {
+		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+			this.isDragging = false;
+			this.controller.IsDragging = false;
+			this.controller.socket.UpdateToken(this);
+		}
+		if(this.controller.IsAttacking) {
+			this.controller.socket.Attack(this.controller.attacker, this.controller.attackerType, this.repID, this.tokenType, this.controller.attack.id);
+			this.controller.IsAttacking = false;
+		}
+	}
 
-    public void OnMouseUp()
-    {
-        this.isDragging = false;
-        this.controller.IsDragging = false;
-        this.controller.socket.UpdateToken(this);
-    }
-
-    public void OnMouseOver()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            this.controller.OpenScreens.Add(this.RightClickMenu);
-            this.RightClickMenu.SetActive(!this.RightClickMenu.activeSelf);
-            this.RightClickMenu.GetComponent<RectTransform>().position = Input.mousePosition;
-        }
+    public void OnMouseOver() {
+		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+			if(Input.GetMouseButtonDown(1)) {
+				this.controller.OpenScreens.Add(this.RightClickMenu);
+				this.RightClickMenu.SetActive(!this.RightClickMenu.activeSelf);
+				this.RightClickMenu.GetComponent<RectTransform>().position = Input.mousePosition;
+			}
+		}
     }
 
 
     void Update()
     {
-        if(isDragging)
-        {
-            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-            transform.Translate(mousePosition - size / 2);
-        }
+
+		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+			if(isDragging) {
+				Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+				transform.Translate(mousePosition - size / 2);
+			}
+		}
     }
 
-    public void LoadToken(int tokenID, int imageID)
+    public void LoadToken(int tokenID, int imageID, int repID, TokenType tokenType, int owner)
     {
         this.tokenID = tokenID;
         this.imageID = imageID;
         this.GetToken(imageID);
+		this.repID = repID;
+		this.tokenType = tokenType;
+		this.owner = owner;
     }
 
     public void SetStatusPanel(GameObject statusPanel)

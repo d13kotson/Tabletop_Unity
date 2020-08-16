@@ -2,10 +2,9 @@
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class TrainerStatus : MonoBehaviour
+public class TrainerStatus : Window
 {
     private Trainer trainer;
-    private GameController controller;
     private GameObject statsTab;
     private GameObject skillsTab;
     private GameObject movesTab;
@@ -56,7 +55,7 @@ public class TrainerStatus : MonoBehaviour
 
     public void AddToken()
     {
-        this.controller.socket.AddToken(this.trainer.token.id, Camera.main.transform.position.x, Camera.main.transform.position.y);
+        this.controller.socket.AddToken(this.trainer.token.id, Camera.main.transform.position.x, Camera.main.transform.position.y, TokenType.trainer, this.trainer.id);
     }
 
     public void ShowStats()
@@ -123,25 +122,5 @@ public class TrainerStatus : MonoBehaviour
         int newCS = int.Parse(input.text);
         this.trainer.speed_cs = newCS;
         this.UpdateTrainer();
-    }
-
-    public void Enable()
-    {
-        this.controller.CloseScreens();
-        bool value = !this.gameObject.activeSelf;
-        if (value)
-        {
-            this.controller.OpenScreens.Add(this.gameObject);
-        }
-        else
-        {
-            this.controller.OpenScreens.Remove(this.gameObject);
-        }
-        this.gameObject.SetActive(value);
-    }
-
-    public void Disable()
-    {
-        this.gameObject.SetActive(false);
     }
 }

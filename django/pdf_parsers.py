@@ -1,7 +1,17 @@
 import json
+import time
 
 import PyPDF2
 import re
+
+import requests
+from lxml import html
+
+import django
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'tabletop.local_pycharm_settings'
+django.setup()
+from ptu.models import Attack
 
 def parse_dex(pdf_file):
     pages = list()
@@ -97,7 +107,7 @@ def parse_basic_info(basic_info):
     return type_1, type_2, basic_abilities, advanced_abilities, high_ability
 
 
-def parse_evolution(evolution, poke_name):
+def parse_evolution(evolution, poke_name, dex_num):
     evolutions = list()
     current_evos = list()
     current_stage = 1
@@ -111,7 +121,9 @@ def parse_evolution(evolution, poke_name):
         split = evolution.split(' ')
         name = split[0]
         requirments = ' '.join(split[1:])
-        evolutions.append((name, stage, requirments))
+        base = dex_num[poke_name]
+        evolved = dex_num[name]
+        evolutions.append((name, stage, requirments, base, evolved))
         if name.lower() == poke_name.lower():
             current_stage = stage
     for evolution in evolutions:
@@ -229,7 +241,7 @@ def parse_move_list(move_info):
     return move_list
 
 
-def parse_dex_2(txt_file='dex.json'):
+def parse_dex_2(txt_file='dex.json', output_file_suffix='_base'):
     species = list()
     species_attacks = list()
     with open('dex_num.json') as dex_file:
@@ -285,7 +297,7 @@ def parse_dex_2(txt_file='dex.json'):
         type_1, type_2, basic_abilities, adv_abilities, high_ability = parse_basic_info(basic_information)
         evolution_split = re.split('Size Information', basic_information_split[1])
         evolution = evolution_split[0]
-        evolutions = parse_evolution(evolution, name)
+        evolutions = parse_evolution(evolution, name, dex)
         size_split = re.split('Breeding Information', evolution_split[1])
         size_info = re.sub(r'\s+', ' ', size_split[0])
         size_match = re.search(r'\([A-Za-z]+\)', size_info)
@@ -332,7 +344,7 @@ def parse_dex_2(txt_file='dex.json'):
         species.append(f"""
   {{
     "model": "ptu.species",
-    "pk": {species_index},
+    "pk": {dex[name]},
     "fields": {{
         "name": "{name}",
         "dex_num": {dex[name]},
@@ -433,14 +445,14 @@ def parse_dex_2(txt_file='dex.json'):
     "model": "ptu.evolution",
     "pk": {evolution_index},
     "fields": {{
-        "base": {key},
-        "evolved": {pokemon_indices[evolution[0]]},
-        "requirements": "{evolution[2]}",
+        "base": {evolution[3]},
+        "evolved": {evolution[4]},
+        "requirements": "{evolution[2]}"
         }}
     }}""")
             evolution_index += 1
-    '''
-    with open('species.json', 'w') as species_json:
+
+    with open(f'species{output_file_suffix}.json', 'w') as species_json:
         species_json.write('[\n')
         species_json.write(','.join(species))
         species_json.write(',\n')
@@ -448,23 +460,48 @@ def parse_dex_2(txt_file='dex.json'):
         species_json.write(',\n')
         species_json.write(','.join(species_attacks))
         species_json.write(']')
-    '''
-    with open('tokens.json', 'w') as tokens_json:
+
+    with open(f'tokens{output_file_suffix}.json', 'w') as tokens_json:
         tokens_json.write('[\n')
         tokens_json.write(','.join(images))
-        tokens_json.write(',\n')
-        tokens_json.write(','.join(tokens))
         tokens_json.write(']')
 
 
-def pdf_to_txt(pdf_file='C:/Users/Danny/Documents/Pokemon/PTU 1.05 + errata/PTU 1.05 + errata/dex.pdf'):
+def create_dex_json():
+    dex = dict()
+    for i in range(1, 810):
+        print(f'Fetching Pokemon {i}')
+        url = f'https://www.serebii.net/pokedex-sm/{str(i).zfill(3)}.shtml'
+        page = requests.get(url)
+        tree = html.fromstring(page.content)
+        name = tree.xpath('//main/div[1]/div[1]/table[5]/tr[2]/td[1]')[0].text
+        if name.isspace():
+            name = tree.xpath('//main/div[1]/div[1]/table[4]/tr[2]/td[1]')[0].text
+        print(name)
+        dex[name] = i
+    with open('dex_num.json', 'w') as file:
+        file.write(json.dumps(dex))
+
+
+def create_attacks_json():
+    attacks = Attack.objects.all()
+    attack_dict = {attack.name: attack.id for attack in attacks}
+    with open('attacks_dict.json', 'w') as file:
+        file.write(json.dumps(attack_dict))
+
+
+def pdf_to_txt(pdf_file='C:/Users/Danny/Documents/Pokemon/PTU 1.05 + errata/PTU 1.05 + errata/dex.pdf', start_page=11, end_page=746, to_file='dex.json'):
     pages = list()
     with open(pdf_file, 'rb') as file:
         file_reader = PyPDF2.PdfFileReader(file)
-        for i in range(11, file_reader.getNumPages() - 2):
+        for i in range(start_page, end_page):
             if i != 681 and i != 607:
                 text = file_reader.getPage(i).extractText()
                 text = re.sub('˚', 'fi', text)
                 pages.append(text)
-    with open('dex.json', 'w') as file:
+    with open(to_file, 'w') as file:
         file.write(json.dumps(pages))
+
+
+def alola_to_txt(pdf_file='C:/Users/Danny/Documents/Pokemon\PTU 1.05 + errata\PTU 1.05 + errata\Alola Dex\dex.pdf', start_page=3, end_page=117):
+    pdf_to_txt(pdf_file, start_page, end_page, 'alola.json')

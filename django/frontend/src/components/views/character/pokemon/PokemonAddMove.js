@@ -14,6 +14,9 @@ class PokemonAddMove extends TabbedComponent {
 		const pokemon = this.props.pokemon;
 		const learnableMoves = pokemon.species.speciesAttack;
 		const knownMoves = pokemon.pokemonAttack;
+		for(let move of knownMoves) {
+		    this.tabRefs["moves"][move.attack.id] = React.createRef();
+		}
 		for(let move of learnableMoves) {
 			if(move.level <= pokemon.level) {
 				this.tabRefs["moves"][move.attack.id] = React.createRef();

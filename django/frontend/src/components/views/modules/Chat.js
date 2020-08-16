@@ -43,7 +43,7 @@ class Chat extends Component {
 		this.tabRefs["chatLog"].current.value += (data["display_name"] + ": " + data["message"] + "\n");
 	}
 
-	sendMessage() {
+	sendInputMessage() {
 		let message = this.tabRefs["chatInput"].current.value;
 		this.sendMessage(message);
 	}
@@ -213,8 +213,8 @@ class Chat extends Component {
 		return (
 <div>
     <textarea ref={this.tabRefs["chatLog"]} id="chat-log" readOnly="readonly" style={{width: "90%", height: window.innerHeight * .8 + "px", resize: "none"}}></textarea>
-    <input ref={this.tabRefs["chatInput"]} id="chat-message-input" type="text" onKeyUp={(event) => { if(event.keyCode == 13) this.sendMessage() }}/>
-    <input id="chat-message-submit" type="button" value="send" onClick={() => this.sendMessage()} />
+    <input ref={this.tabRefs["chatInput"]} id="chat-message-input" type="text" onKeyUp={(event) => { if(event.keyCode == 13) this.sendInputMessage() }}/>
+    <input id="chat-message-submit" type="button" value="send" onClick={() => this.sendInputMessage()} />
     <br/>
     <a className="button" onClick={() => this.sendMessage("/roll d20")}>Roll d20</a>
     <br/>

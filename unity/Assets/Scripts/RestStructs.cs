@@ -31,6 +31,11 @@ internal struct UserInfo
     public GameTitle[] game;
 }
 
+public enum TokenType {
+	trainer = 1,
+	pokemon = 2
+}
+
 [Serializable]
 internal struct MapToken
 {
@@ -40,6 +45,9 @@ internal struct MapToken
     public float y;
     public int width;
     public int height;
+	public TokenType tokenType;
+	public int repID;
+	public int owner;
 }
 
 [Serializable]

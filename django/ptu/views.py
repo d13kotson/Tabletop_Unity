@@ -6,6 +6,7 @@ from pathlib import Path
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -276,6 +277,7 @@ def image(request, pk):
         return HttpResponse(status=404)
 
 
+@csrf_exempt
 def upload_image(request):
     if request.method == 'POST':
         body = json.loads(request.body)

@@ -13,6 +13,7 @@ class ImageSerializer(serializers.ModelSerializer):
 
 
 class BackgroundSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
     class Meta:
         model = Background
         fields = '__all__'
@@ -327,6 +328,7 @@ class TrainerSerializer(serializers.ModelSerializer):
     trainer_feature = TrainerFeatureSerializer(many=True, read_only=True)
     item = TrainerItemSerializer(many=True, read_only=True)
     trainer_attack = TrainerAttackSerializer(many=True, read_only=True)
+    token = TokenSerializer(many=False, read_only=True)
 
     class Meta:
         model = Trainer

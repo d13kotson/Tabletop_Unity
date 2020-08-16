@@ -1270,8 +1270,8 @@ MonoBehaviour:
   CharacterPrefab: {fileID: 4881541913530570782, guid: 9db35af600ccac44d9da95fdcfb00783,
     type: 3}
   IsDragging: 0
-  Username: {fileID: 1230396752}
-  Password: {fileID: 1407367583}
+  UIActive: 0
+  IsAttacking: 0
   LoginError: {fileID: 1160213480}
 --- !u!4 &2074329400
 Transform:

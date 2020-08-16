@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 
-public class Inventory : MonoBehaviour
+public class Inventory : Window
 {
     public GameObject Item = default;
     public Transform viewPort = default;
@@ -14,8 +14,6 @@ public class Inventory : MonoBehaviour
     public InputField ItemNumber = default;
     private List<int> itemIDs = new List<int>();
     private List<GameObject> itemPanels = new List<GameObject>();
-
-    private GameController controller = default;
 
     private void Awake()
     {
@@ -134,25 +132,5 @@ public class Inventory : MonoBehaviour
         {
 
         });
-    }
-
-    public void Enable()
-    {
-        this.controller.CloseScreens();
-        bool value = !this.gameObject.activeSelf;
-        if (value)
-        {
-            this.controller.OpenScreens.Add(this.gameObject);
-        }
-        else
-        {
-            this.controller.OpenScreens.Remove(this.gameObject);
-        }
-        this.gameObject.SetActive(value);
-    }
-
-    public void Disable()
-    {
-        this.gameObject.SetActive(false);
     }
 }

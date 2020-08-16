@@ -3,9 +3,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PokemonLevelUp : MonoBehaviour
+public class PokemonLevelUp : Window
 {
-    private GameController controller;
     public RectTransform MoveContent = default;
     public InputField ConstitutionInput = default;
     public InputField AttackInput = default;
@@ -75,10 +74,10 @@ public class PokemonLevelUp : MonoBehaviour
             movePanel.transform.SetParent(this.MoveContent);
             RectTransform rect = movePanel.GetComponent<RectTransform>();
             rect.anchoredPosition = new Vector2(0, position);
-            rect.sizeDelta = new Vector2(0, 100);
+            rect.sizeDelta = new Vector2(0, 120);
             movePanel.GetComponentInChildren<Text>().text = name;
-            movePanel.GetComponent<MovePanel>().Set(attack.attack);
-            position -= 100;
+            movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
+            position -= 120;
             knownAttacks.Add(attack.attack.id);
             this.moves.Add(movePanel);
             this.attacks.Add(attack.attack.id);
@@ -92,10 +91,10 @@ public class PokemonLevelUp : MonoBehaviour
                 movePanel.transform.SetParent(this.MoveContent);
                 RectTransform rect = movePanel.GetComponent<RectTransform>();
                 rect.anchoredPosition = new Vector2(0, position);
-                rect.sizeDelta = new Vector2(0, 100);
+                rect.sizeDelta = new Vector2(0, 120);
                 movePanel.GetComponentInChildren<Text>().text = name;
-                movePanel.GetComponent<MovePanel>().Set(attack.attack);
-                position -= 100;
+                movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
+                position -= 120;
                 this.moves.Add(movePanel);
                 this.attacks.Add(attack.attack.id);
             }
@@ -182,17 +181,5 @@ public class PokemonLevelUp : MonoBehaviour
     {
         this.statsTab.SetActive(false);
         this.movesTab.SetActive(false);
-    }
-
-    public void Enable()
-    {
-        this.controller.CloseScreens();
-        bool value = !this.gameObject.activeSelf;
-        this.gameObject.SetActive(value);
-    }
-
-    public void Disable()
-    {
-        this.gameObject.SetActive(false);
     }
 }

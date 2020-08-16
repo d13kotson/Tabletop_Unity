@@ -24,7 +24,9 @@ public class GameController : MonoBehaviour
     private List<GameObject> tokens = new List<GameObject>();
     internal Socket socket = default;
     public bool IsDragging;
-    internal bool isGM;
+	public bool UIActive;
+	public bool IsAttacking;
+	internal bool isGM;
     internal List<GameObject> OpenScreens = new List<GameObject>();
     private Queue<string> messages = new Queue<string>();
 
@@ -35,20 +37,30 @@ public class GameController : MonoBehaviour
 
     public static bool created;
 
-    void Awake()
+	internal Dictionary<int, GameObject> trainerStatuses = new Dictionary<int, GameObject>();
+	internal Dictionary<int, GameObject> pokemonStatuses = new Dictionary<int, GameObject>();
+
+	internal Attack attack;
+	internal int attacker;
+	internal TokenType attackerType;
+
+	internal bool IsMeasuring = false;
+
+	void Awake()
     {
         this.OpenScreens = new List<GameObject>();
         this.URL = Application.absoluteURL;
+		print("Before stripping URL: " + this.URL);
         if(this.URL == "")
         {
             this.URL = "http://localhost";
         }
-        else if(this.URL.Contains(':'))
-        {
-            this.URL = this.URL.Substring(0, Application.absoluteURL.IndexOf(':'));
-        }
+		else {
+			this.URL = this.URL.Substring(0, this.URL.LastIndexOf("/"));
+		}
+		print("Post Stripping URL: " + this.URL);
 
-        if (!created)
+		if (!created)
         {
             DontDestroyOnLoad(gameObject);
             created = true;
@@ -323,10 +335,19 @@ public class GameController : MonoBehaviour
         StartCoroutine("waitForSceneLoad", new Tuple<string, Action>("CharacterSelect", this.InstantiateCharacterSelect));
     }
 
-    internal void AddToken(MapToken token)
+    internal void AddToken(MapToken mapToken)
     {
-        GameObject goToken = Instantiate(this.TokenPrefab, new Vector2(token.x, token.y), Quaternion.identity);
-        goToken.GetComponent<Token>().LoadToken(token.tokenID, token.imageID);
+        GameObject goToken = Instantiate(this.TokenPrefab, new Vector2(mapToken.x, mapToken.y), Quaternion.identity);
+		Token token = goToken.GetComponent<Token>();
+		switch(mapToken.tokenType) {
+			case TokenType.trainer:
+				token.SetStatusPanel(this.trainerStatuses[mapToken.repID]);
+				break;
+			case TokenType.pokemon:
+				token.SetStatusPanel(this.pokemonStatuses[mapToken.repID]);
+				break;
+		}
+		token.LoadToken(mapToken.tokenID, mapToken.imageID, mapToken.repID, mapToken.tokenType, mapToken.owner);
         
         this.tokens.Add(goToken);
     }
@@ -382,5 +403,9 @@ public class GameController : MonoBehaviour
     internal void Print(string message)
     {
         print(message);
-    }
+	}
+
+	internal void SetControl(bool measuring) {
+		this.IsMeasuring = measuring;
+	}
 }
