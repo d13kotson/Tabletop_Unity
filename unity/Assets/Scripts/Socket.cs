@@ -207,8 +207,8 @@ internal class Socket
         Dictionary<int, MapToken> tokens = new Dictionary<int, MapToken>();
         MapState mapState = new MapState();
         string message = content.Substring(1, content.Length - 2);
-        int backgroundBegin = message.IndexOf("\"background\": ") + 15;
-        int backgroundEnd = message.IndexOf("\",", backgroundBegin);
+        int backgroundBegin = message.IndexOf("\"background\": ") + 14;
+        int backgroundEnd = message.IndexOf(",", backgroundBegin);
         if(backgroundBegin == backgroundEnd)
         {
             mapState.background = "";

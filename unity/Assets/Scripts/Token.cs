@@ -55,8 +55,7 @@ public class Token : MonoBehaviour
 
     void Update()
     {
-
-		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.id == this.owner)) {
 			if(isDragging) {
 				Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 				transform.Translate(mousePosition - size / 2);
