@@ -117,6 +117,7 @@ internal class Socket
 
     public void SendChatMessage(string user, string message)
     {
+		message = message.Replace("\"", "\\\"");
         this.client.SendMessage("chat", string.Format("{{\"display_name\": \"{0}\", \"message\": \"{1}\"}}", user, message));
     }
 

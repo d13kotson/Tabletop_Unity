@@ -52,9 +52,8 @@ public class GameController : MonoBehaviour
         this.URL = Application.absoluteURL;
         if(this.URL == "")
         {
-            this.URL = "http://192.168.40.160";
-        }
-		else {
+			this.URL = "http://192.168.40.160";
+		} else {
 			this.URL = this.URL.Substring(0, this.URL.LastIndexOf("/"));
 		}
 
@@ -150,6 +149,7 @@ public class GameController : MonoBehaviour
                 screen.SetActive(false);
             }
         }
+		this.UIActive = false;
         this.OpenScreens = new List<GameObject>();
     }
 
