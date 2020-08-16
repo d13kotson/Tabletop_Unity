@@ -53,7 +53,7 @@ public class GameController : MonoBehaviour
 		print("Before stripping URL: " + this.URL);
         if(this.URL == "")
         {
-            this.URL = "http://localhost";
+            this.URL = "http://192.168.40.160";
         }
 		else {
 			this.URL = this.URL.Substring(0, this.URL.LastIndexOf("/"));
@@ -161,7 +161,7 @@ public class GameController : MonoBehaviour
         this.SendGetRequest(string.Format("api/game/{0}", id), (request) =>
         {
             this.game = JsonUtility.FromJson<Game>(request.downloadHandler.text);
-            this.socket = new Socket(string.Format("ws://localhost/ws/{0}/true", this.game.id), this);
+            this.socket = new Socket(string.Format("ws://{0}/ws/{1}/true", this.URL.Substring(7), this.game.id), this);
             SceneManager.LoadScene("Game");
         }, (request) =>
         {
@@ -175,7 +175,7 @@ public class GameController : MonoBehaviour
         this.SendGetRequest(string.Format("api/trainer/{0}", id), (request) =>
         {
             this.trainer = JsonUtility.FromJson<Trainer>(request.downloadHandler.text);
-            this.socket = new Socket(string.Format("ws://localhost/ws/{0}/false", this.trainer.game), this);
+            this.socket = new Socket(string.Format("ws://{0}/ws/{1}/false", this.URL.Substring(7), this.trainer.game), this);
             SceneManager.LoadScene("Game");
         }, (request) =>
         {
