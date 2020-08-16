@@ -81,8 +81,8 @@ class AttackList(generics.ListAPIView):
 
 class SpeciesList(generics.ListAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Species.objects.all()
-    serializer_class = serializers.SpeciesSerializer
+    queryset = Species.objects.all().order_by('dex_num')
+    serializer_class = serializers.SpeciesSimpleSerializer
 
 
 class ItemList(generics.ListAPIView):

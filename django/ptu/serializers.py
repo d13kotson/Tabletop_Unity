@@ -117,6 +117,13 @@ class SpeciesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class SpeciesSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Species
+        fields = ('id', 'name')
+
+
 class PokemonAttackSerializer(serializers.ModelSerializer):
     attack = AttackSerializer()
 
