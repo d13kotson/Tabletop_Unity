@@ -24,26 +24,26 @@ public class Token : MonoBehaviour
 
 	public void OnMouseDown()
     {
-		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
 			this.isDragging = true;
 			this.controller.IsDragging = true;
 		}
     }
 
     public void OnMouseUp() {
-		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
 			this.isDragging = false;
 			this.controller.IsDragging = false;
 			this.controller.socket.UpdateToken(this);
 		}
-		if(this.controller.IsAttacking) {
+		if(!this.controller.IsMeasuring && this.controller.IsAttacking) {
 			this.controller.socket.Attack(this.controller.attacker, this.controller.attackerType, this.repID, this.tokenType, this.controller.attack.id);
 			this.controller.IsAttacking = false;
 		}
 	}
 
     public void OnMouseOver() {
-		if(this.controller.isGM || this.controller.trainer.id == this.owner) {
+		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
 			if(Input.GetMouseButtonDown(1)) {
 				this.controller.OpenScreens.Add(this.RightClickMenu);
 				this.RightClickMenu.SetActive(!this.RightClickMenu.activeSelf);
@@ -55,7 +55,7 @@ public class Token : MonoBehaviour
 
     void Update()
     {
-		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.id == this.owner)) {
+		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
 			if(isDragging) {
 				Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 				transform.Translate(mousePosition - size / 2);

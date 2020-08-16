@@ -254,8 +254,12 @@ internal class Socket
 		if(this.mapState.tokens == null) {
 			this.mapState.tokens = new Dictionary<int, MapToken>();
 		}
-        this.mapState.tokens.Add(mapToken.tokenID, mapToken);
-        this.controller.AddToken(mapToken);
+		if(this.mapState.tokens.ContainsKey(mapToken.tokenID)) {
+			this.mapState.tokens[mapToken.tokenID] = mapToken;
+		} else {
+			this.mapState.tokens.Add(mapToken.tokenID, mapToken);
+			this.controller.AddToken(mapToken);
+		}
     }
 
     private void UpdateToken(string content)
