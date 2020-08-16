@@ -104,7 +104,7 @@ class PTUConsumer(WebsocketConsumer):
             'height': token.image.height,
             'tokenType': content['tokenType'],
             'repID': content['repID'],
-            'owner': token.user
+            'owner': token.user.id
         }
 
     def update_token(self, event):

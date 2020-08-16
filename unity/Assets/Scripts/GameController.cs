@@ -50,7 +50,6 @@ public class GameController : MonoBehaviour
     {
         this.OpenScreens = new List<GameObject>();
         this.URL = Application.absoluteURL;
-		print("Before stripping URL: " + this.URL);
         if(this.URL == "")
         {
             this.URL = "http://192.168.40.160";
@@ -58,7 +57,6 @@ public class GameController : MonoBehaviour
 		else {
 			this.URL = this.URL.Substring(0, this.URL.LastIndexOf("/"));
 		}
-		print("Post Stripping URL: " + this.URL);
 
 		if (!created)
         {
@@ -341,10 +339,14 @@ public class GameController : MonoBehaviour
 		Token token = goToken.GetComponent<Token>();
 		switch(mapToken.tokenType) {
 			case TokenType.trainer:
-				token.SetStatusPanel(this.trainerStatuses[mapToken.repID]);
+				if(this.trainerStatuses.ContainsKey(mapToken.repID)) {
+					token.SetStatusPanel(this.trainerStatuses[mapToken.repID]);
+				}
 				break;
 			case TokenType.pokemon:
-				token.SetStatusPanel(this.pokemonStatuses[mapToken.repID]);
+				if(this.pokemonStatuses.ContainsKey(mapToken.repID)) {
+					token.SetStatusPanel(this.pokemonStatuses[mapToken.repID]);
+				}
 				break;
 		}
 		token.LoadToken(mapToken.tokenID, mapToken.imageID, mapToken.repID, mapToken.tokenType, mapToken.owner);
