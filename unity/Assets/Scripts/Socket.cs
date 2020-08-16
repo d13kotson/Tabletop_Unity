@@ -257,6 +257,7 @@ internal class Socket
 		}
 		if(this.mapState.tokens.ContainsKey(mapToken.tokenID)) {
 			this.mapState.tokens[mapToken.tokenID] = mapToken;
+			this.controller.UpdateMap(this.mapState.tokens[mapToken.tokenID]);
 		} else {
 			this.mapState.tokens.Add(mapToken.tokenID, mapToken);
 			this.controller.AddToken(mapToken);
