@@ -207,6 +207,9 @@ public class PokemonStatus : Window
                         this.levelUpPanelObj.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
                         this.levelUpPanelObj.GetComponent<PokemonLevelUp>().Set(this.pokemon);
                     }
+					else {
+						this.controller.Reload();
+					}
                 }, (updateRequest) =>
                 {
 

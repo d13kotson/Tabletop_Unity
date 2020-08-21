@@ -69,13 +69,9 @@ public class Party : Window
             foreach (Trainer trainer in this.controller.game.trainer)
             {
                 this.trainers[trainer.id].Set(trainer);
-            }
-            foreach (Trainer trainer in this.controller.game.trainer)
-            {
-                foreach (Pokemon pokemon in trainer.pokemon)
-                {
-                    this.pokemon[pokemon.id].Set(pokemon);
-                }
+			}
+			foreach(Pokemon pokemon in this.controller.game.pokemon) {
+				this.pokemon[pokemon.id].Set(pokemon);
             }
         }
         else

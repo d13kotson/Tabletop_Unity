@@ -129,6 +129,7 @@ public class PokemonLevelUp : Window
             this.controller.SendPostRequest("api/addPokemonAttack", data, (levelRequest) => { this.controller.Reload(); }, (levelRequest) => { });
             this.controller.Reload();
             Destroy(this.gameObject);
+			this.controller.Reload();
         }, (pokemonRequest) =>
         {
 

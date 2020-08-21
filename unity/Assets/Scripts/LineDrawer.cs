@@ -10,7 +10,7 @@ public class LineDrawer : MonoBehaviour
 	private Vector2 startMousePos;
 
 	[SerializeField]
-	private Text distanceText;
+	private Text distanceText = default;
 	public float scale;
 	private float distance;
 

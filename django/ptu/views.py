@@ -173,6 +173,30 @@ class TrainerItemAdd(generics.CreateAPIView):
     serializer_class = serializers.TrainerItemSimpleSerializer
 
 
+class TrainerItemIncrease(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        item = TrainerItem.objects.get(pk=pk)
+        item.number += 1
+        item.save()
+        return Response(data=None, status=200)
+
+
+class TrainerItemDecrease(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        item = TrainerItem.objects.get(pk=pk)
+        item.number -= 1
+        if item.number <= 0:
+            item.delete()
+        else:
+            item.save()
+        return Response(data=None, status=200)
+
+
+
 class PokemonDetail(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Pokemon.objects.all()
