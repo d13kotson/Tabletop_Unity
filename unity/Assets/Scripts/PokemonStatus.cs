@@ -10,6 +10,7 @@ public class PokemonStatus : Window
     private GameObject skillsTab;
     private GameObject movesTab;
     private GameObject levelUpPanelObj;
+	private RectTransform panelsPanel;
 
     public InputField ExpInput = default;
     public GameObject LevelUpPanel = default;
@@ -22,7 +23,7 @@ public class PokemonStatus : Window
         RectTransform rect = this.GetComponent<RectTransform>();
         rect.anchoredPosition = new Vector2(0, 0);
         rect.sizeDelta = new Vector2(470, -100);
-    }
+	}
 
     internal void Set(Pokemon pokemon)
     {
@@ -38,15 +39,16 @@ public class PokemonStatus : Window
     private void UpdatePokemon()
     {
         Transform content = this.gameObject.transform.Find("Viewport").Find("Content");
-        content.Find("Name").gameObject.GetComponent<Text>().text = this.pokemon.name;
-        content.Find("DexNum").gameObject.GetComponent<Text>().text = this.pokemon.species.dex_num.ToString();
-        content.Find("Level").gameObject.GetComponent<Text>().text = this.pokemon.level.ToString();
-        content.Find("Exp").gameObject.GetComponent<Text>().text = this.pokemon.experience.ToString();
-        this.statsTab = content.Find("StatsPanel").gameObject;
+        content.Find("Main").Find("Name").gameObject.GetComponent<Text>().text = this.pokemon.name;
+        content.Find("Main").Find("DexNum").gameObject.GetComponent<Text>().text = this.pokemon.species.dex_num.ToString();
+        content.Find("Level").Find("Level").gameObject.GetComponent<Text>().text = this.pokemon.level.ToString();
+        content.Find("Level").Find("Exp").gameObject.GetComponent<Text>().text = this.pokemon.experience.ToString();
+		this.panelsPanel = (RectTransform)content.Find("Panels");
+		this.statsTab = content.Find("Panels").Find("StatsPanel").gameObject;
         this.statsTab.GetComponent<PokemonStatsTab>().Set(this.pokemon);
-        this.skillsTab = content.Find("SkillsPanel").gameObject;
+        this.skillsTab = content.Find("Panels").Find("SkillsPanel").gameObject;
         this.skillsTab.GetComponent<PokemonSkillsTab>().Set(this.pokemon);
-        this.movesTab = content.Find("MovesPanel").gameObject;
+        this.movesTab = content.Find("Panels").Find("MovesPanel").gameObject;
         this.movesTab.GetComponent<PokemonMovesTab>().Set(this.pokemon);
     }
 
@@ -56,7 +58,7 @@ public class PokemonStatus : Window
         {
             Texture2D texture = DownloadHandlerTexture.GetContent(request);
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            this.gameObject.transform.Find("Viewport").Find("Content").Find("AddToken").GetComponent<Image>().sprite = sprite;
+            this.gameObject.transform.Find("Viewport").Find("Content").Find("Buttons").Find("AddToken").GetComponent<Image>().sprite = sprite;
         }, (request) =>
         {
 
@@ -67,19 +69,23 @@ public class PokemonStatus : Window
     {
         this.HideTabs();
         this.statsTab.SetActive(true);
-    }
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, 200);
+
+	}
 
     public void ShowSkills()
     {
         this.HideTabs();
         this.skillsTab.SetActive(true);
-    }
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, 220);
+	}
 
     public void ShowMoves()
     {
         this.HideTabs();
         this.movesTab.SetActive(true);
-    }
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, 1080);
+	}
 
     private void HideTabs()
     {

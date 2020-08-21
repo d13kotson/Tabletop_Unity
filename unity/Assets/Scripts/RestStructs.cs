@@ -127,11 +127,16 @@ internal struct Species
 }
 
 [Serializable]
+internal struct Type {
+	public string name;
+}
+
+[Serializable]
 internal struct Attack
 {
     public int id;
     public string name;
-    public string type;
+    public Type type;
     public string frequency;
     public int ac;
     public int damage_base;

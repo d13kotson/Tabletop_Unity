@@ -8,8 +8,9 @@ public class TrainerStatus : Window
     private GameObject statsTab;
     private GameObject skillsTab;
     private GameObject movesTab;
+	private RectTransform panelsPanel;
 
-    void Awake()
+	void Awake()
     {
         this.Disable();
         this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -31,12 +32,13 @@ public class TrainerStatus : Window
     private void UpdateTrainer()
     {
         Transform content = this.gameObject.transform.Find("Viewport").Find("Content");
-        content.Find("Name").gameObject.GetComponent<Text>().text = this.trainer.name;
-        this.statsTab = content.Find("StatsPanel").gameObject;
+		this.panelsPanel = (RectTransform)content.Find("Panels");
+		content.Find("Main").Find("Name").gameObject.GetComponent<Text>().text = this.trainer.name;
+        this.statsTab = content.Find("Panels").Find("StatsPanel").gameObject;
         this.statsTab.GetComponent<TrainerStatsTab>().Set(this.trainer);
-        this.skillsTab = content.Find("SkillsPanel").gameObject;
+        this.skillsTab = content.Find("Panels").Find("SkillsPanel").gameObject;
         this.skillsTab.GetComponent<TrainerSkillsTab>().Set(this.trainer);
-        this.movesTab = content.Find("MovesPanel").gameObject;
+        this.movesTab = content.Find("Panels").Find("MovesPanel").gameObject;
         this.movesTab.GetComponent<TrainerMovesTab>().Set(this.trainer);
     }
 
@@ -46,7 +48,7 @@ public class TrainerStatus : Window
         {
             Texture2D texture = DownloadHandlerTexture.GetContent(request);
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            this.gameObject.transform.Find("Viewport").Find("Content").Find("AddToken").GetComponent<Image>().sprite = sprite;
+            this.gameObject.transform.Find("Viewport").Find("Content").Find("Buttons").Find("AddToken").GetComponent<Image>().sprite = sprite;
         }, (request) =>
         {
 
@@ -62,19 +64,22 @@ public class TrainerStatus : Window
     {
         this.HideTabs();
         this.statsTab.SetActive(true);
-    }
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, 200);
+	}
 
     public void ShowSkills()
     {
         this.HideTabs();
         this.skillsTab.SetActive(true);
-    }
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, 220);
+	}
 
     public void ShowMoves()
     {
         this.HideTabs();
         this.movesTab.SetActive(true);
-    }
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, 1080);
+	}
 
     private void HideTabs()
     {
