@@ -25,8 +25,8 @@ class Background(models.Model):
 
 
 class Token(models.Model):
-    user = models.ForeignKey(User, related_name='gm', on_delete=models.CASCADE)
-    title = models.CharField(max_length=20)
+    user = models.ForeignKey(User, related_name='gm', on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=20, null=True)
     image = models.ForeignKey(Image, on_delete=models.CASCADE)
 
     def __str__(self):

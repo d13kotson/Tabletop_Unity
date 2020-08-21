@@ -412,16 +412,6 @@ def parse_dex_2(txt_file='dex.json', output_file_suffix='_base'):
             "width": {image_width}
         }}
     }}""")
-        tokens.append(f"""
-    {{
-        "model": "ptu.token",
-        "pk": {species_index},
-        "fields": {{
-            "user": 1,
-            "title": "{name}",
-            "image": {species_index}
-        }}
-    }}""")
         pokemon_indices[name] = species_index
         all_evolutions[species_index] = evolutions
         for attack in move_list:
@@ -430,7 +420,7 @@ def parse_dex_2(txt_file='dex.json', output_file_suffix='_base'):
         "model": "ptu.speciesattack",
         "pk": {attack_index},
         "fields": {{
-            "species": {species_index},
+            "species": {dex[name]},
             "attack": {attacks[attack[1].strip()]},
             "level": {attack[0]}
             }}

@@ -218,6 +218,9 @@ internal class Socket
         {
             mapState.background = message.Substring(backgroundBegin, backgroundEnd - backgroundBegin);
         }
+		if(mapState.background == "\"\"") {
+			mapState.background = "";
+		}
         int tokensBegin = message.IndexOf("\"tokens\": {") + 11;
         int tokensEnd = message.Length - 1;
         if (tokensBegin == tokensEnd)

@@ -199,7 +199,6 @@ class PokemonSimpleSerializer(serializers.ModelSerializer):
         instance.special_attack = validated_data.get('special_attack', instance.special_attack)
         instance.special_defense = validated_data.get('special_defense', instance.special_defense)
         instance.speed = validated_data.get('speed', instance.speed)
-        instance.constitution_cs = validated_data.get('constitution_cs', instance.constitution_cs)
         instance.attack_cs = validated_data.get('attack_cs', instance.attack_cs)
         instance.defense_cs = validated_data.get('defense_cs', instance.defense_cs)
         instance.special_attack_cs = validated_data.get('special_attack_cs', instance.special_attack_cs)
@@ -214,7 +213,7 @@ class PokemonSimpleSerializer(serializers.ModelSerializer):
 
         pokemon.name = validated_data['name']
         pokemon.species = validated_data['species']
-        pokemon.nature = random.randint(0, 35)
+        pokemon.nature = Nature.objects.get(pk=random.randint(0, 35))
         pokemon.level = validated_data['level']
         pokemon.game = validated_data['game']
         pokemon.experience = pokemon.exp_to_level(pokemon.level)
@@ -226,6 +225,14 @@ class PokemonSimpleSerializer(serializers.ModelSerializer):
         pokemon.special_defense = 0
         pokemon.speed = 0
         pokemon.current_hp = 0
+
+        token = Token()
+        token.image = Image.objects.get(path=f'{str(pokemon.species.id).zfill(3)}.png')
+        game = Game.objects.get(pk=pokemon.game.id)
+        token.user = game.gm
+        token.save()
+
+        pokemon.token = token
 
         species = pokemon.species
         base_stat_total = species.base_constitution + species.base_attack + species.base_defense + \
@@ -255,6 +262,9 @@ class PokemonSimpleSerializer(serializers.ModelSerializer):
             pokemon.speed = pokemon.speed + 1
 
         pokemon.save()
+
+        token.title = pokemon.id
+        token.save()
 
         species_attacks = SpeciesAttack.objects.filter(species=pokemon.species,
                                                        level__lte=pokemon.level).select_related('attack').order_by(

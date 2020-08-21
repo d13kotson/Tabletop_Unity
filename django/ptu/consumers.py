@@ -336,7 +336,7 @@ class PTUConsumer(WebsocketConsumer):
 
         message = f'''Rolled a {hit_roll} to hit.
 It will deal {floor(sum)} damage.
-If Critical add {num_die * die_num} damage!'''
+If Critical add {num_die * die_num * effectiveness} damage!'''
         return message
 
 

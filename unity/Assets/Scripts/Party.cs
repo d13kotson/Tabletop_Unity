@@ -31,18 +31,14 @@ public class Party : Window
                 this.trainers.Add(trainer.id, trainerStatus.GetComponent<TrainerStatus>());
 				this.controller.trainerStatuses.Add(trainer.id, trainerStatus);
 			}
-            foreach (Trainer trainer in this.controller.game.trainer)
-            {
-                foreach (Pokemon pokemon in trainer.pokemon)
-                {
-                    GameObject pokemonStatus = Instantiate(this.pokemonStatus);
-                    pokemonStatus.GetComponent<Transform>().SetParent(canvas);
-                    pokemonStatus.GetComponent<PokemonStatus>().Set(pokemon);
-                    this.addButton(pokemon.name, delegate { this.enablePokemonStats(pokemonStatus); });
-                    this.pokemon.Add(pokemon.id, pokemonStatus.GetComponent<PokemonStatus>());
-					this.controller.pokemonStatuses.Add(pokemon.id, pokemonStatus);
-                }
-            }
+			foreach (Pokemon pokemon in this.controller.game.pokemon) {
+				GameObject pokemonStatus = Instantiate(this.pokemonStatus);
+				pokemonStatus.GetComponent<Transform>().SetParent(canvas);
+				pokemonStatus.GetComponent<PokemonStatus>().Set(pokemon);
+				this.addButton(pokemon.name, delegate { this.enablePokemonStats(pokemonStatus); });
+				this.pokemon.Add(pokemon.id, pokemonStatus.GetComponent<PokemonStatus>());
+				this.controller.pokemonStatuses.Add(pokemon.id, pokemonStatus);
+			}
         }
         else
         {
