@@ -304,13 +304,13 @@ def image(request, pk):
 @csrf_exempt
 def upload_image(request):
     if request.method == 'POST':
-        body = json.loads(request.body)
-        image_data = body['image']
-        name = body['name']
-        height = body['height']
-        width = body['width']
+        image_data = request.FILES['image']
+        name = request.POST['name']
+        height = request.POST['height']
+        width = request.POST['width']
         image = Image(
             name=name,
+            path=image_data.name,
             height=height,
             width=width
         )
@@ -318,9 +318,9 @@ def upload_image(request):
         image_path = get_image_url(image.path)
         Path(os.path.dirname(image_path)).mkdir(parents=True, exist_ok=True)
         image_file = open(image_path, 'wb+')
-        image_file.write(array.array('B', image_data))
+        image_file.write(image_data.read())
         image_file.close()
-    return HttpResponse();
+    return HttpResponse()
 
 
 def get_image_url(image_path):
