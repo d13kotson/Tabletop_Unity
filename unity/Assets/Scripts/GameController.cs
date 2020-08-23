@@ -222,6 +222,10 @@ public class GameController : MonoBehaviour
             this.background = Instantiate(this.BackgroundPrefab, Vector3.zero, Quaternion.identity);
         }
         this.SetBackground();
+		foreach(GameObject token in this.tokens) {
+			Destroy(token);
+		}
+		this.tokens = new List<GameObject>();
         if (this.socket.Tokens != null)
         {
             foreach(int key in this.socket.Tokens.Keys)
