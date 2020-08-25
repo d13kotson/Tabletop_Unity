@@ -20,7 +20,6 @@ public class TrainerMovesTab : MonoBehaviour
         {
             GameObject movePanel = Instantiate(this.MovePanel);
             movePanel.transform.SetParent(content);
-            movePanel.GetComponentInChildren<Text>().text = name;
             movePanel.GetComponent<MovePanel>().Set(attack.attack, trainer.id, TokenType.trainer);
         }
     }

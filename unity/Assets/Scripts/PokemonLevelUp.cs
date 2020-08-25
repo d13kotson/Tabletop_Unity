@@ -71,8 +71,8 @@ public class PokemonLevelUp : Window
         {
             GameObject movePanel = Instantiate(this.MovePanel);
             movePanel.transform.SetParent(this.MoveContent);
-            movePanel.GetComponentInChildren<Text>().text = name;
-            movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
+			movePanel.GetComponentInChildren<Toggle>().isOn = true;
+			movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
             knownAttacks.Add(attack.attack.id);
             this.moves.Add(movePanel);
             this.attacks.Add(attack.attack.id);
@@ -116,7 +116,6 @@ public class PokemonLevelUp : Window
             }
             string data = string.Format("{{\"pokemon\": {0}, \"attacks\": [{1}]}}", pokemon.id, string.Join(",", newAttacks));
             this.controller.SendPostRequest("api/addPokemonAttack", data, (levelRequest) => { this.controller.Reload(); }, (levelRequest) => { });
-            this.controller.Reload();
             Destroy(this.gameObject);
 			this.controller.Reload();
         }, (pokemonRequest) =>

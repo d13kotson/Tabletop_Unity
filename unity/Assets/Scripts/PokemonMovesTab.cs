@@ -16,11 +16,13 @@ public class PokemonMovesTab : MonoBehaviour
     {
         this.pokemon = pokemon;
         Transform content = this.gameObject.transform;
+		foreach(Transform child in content) {
+			Destroy(child.gameObject);
+		}
         foreach(PokemonAttack attack in this.pokemon.pokemon_attack)
         {
             GameObject movePanel = Instantiate(this.MovePanel);
             movePanel.transform.SetParent(content);
-            movePanel.GetComponentInChildren<Text>().text = name;
             movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
         }
     }
