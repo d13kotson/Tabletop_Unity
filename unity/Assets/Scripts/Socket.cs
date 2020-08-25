@@ -76,10 +76,14 @@ internal class SocketClient
 
     internal async void SendMessage(string type, string content)
     {
-        string message = string.Format("{{\"type\": \"{0}\", \"content\": {1}}}", type, content);
-        byte[] sendBytes = Encoding.UTF8.GetBytes(message);
-        ArraySegment<byte> sendBuffer = new ArraySegment<byte>(sendBytes);
-        await this.client.SendAsync(sendBuffer, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: CancellationToken.None);
+		if(this.client.State == WebSocketState.Aborted) {
+			this.initializeSocket();
+		} else {
+			string message = string.Format("{{\"type\": \"{0}\", \"content\": {1}}}", type, content);
+			byte[] sendBytes = Encoding.UTF8.GetBytes(message);
+			ArraySegment<byte> sendBuffer = new ArraySegment<byte>(sendBytes);
+			await this.client.SendAsync(sendBuffer, WebSocketMessageType.Text, endOfMessage: true, cancellationToken: CancellationToken.None);
+		}
     }
 }
 

@@ -273,7 +273,7 @@ class PTUConsumer(WebsocketConsumer):
             return f'Rolled a {hit_roll} to hit.'
         db_id = attack.damage_base.id
         if type(attacker) is Pokemon:
-            if attacker.type_1.id == attack.type.id or attacker.type_2.id == attack.type.id:
+            if attacker.species.type_1.id == attack.type.id or attacker.species.type_2.id == attack.type.id:
                 db_id += 2
 
         db = DamageBase.objects.get(pk=db_id)

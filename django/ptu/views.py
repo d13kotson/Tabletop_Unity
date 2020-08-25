@@ -116,6 +116,15 @@ class TokenList(generics.ListCreateAPIView):
     serializer_class = serializers.TokenSerializer
 
 
+class PokemonLearnableMoves(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = serializers.SpeciesAttackSerializer
+
+    def get_queryset(self):
+        pokemon = Pokemon.objects.get(pk=self.kwargs['pk'])
+        return SpeciesAttack.objects.filter(species=pokemon.species.id, level__lte=pokemon.level)
+
+
 """ Detail Views """
 
 
@@ -216,8 +225,17 @@ class PokemonAttackDetail(generics.RetrieveDestroyAPIView):
 
 class PokemonAttackAdd(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = PokemonAttack.objects.all()
-    serializer_class = serializers.PokemonAttackSimpleSerializer
+
+    def post(self, request):
+        pokemon = Pokemon.objects.get(pk=request.data['pokemon'])
+        attack_ids = request.data['attacks']
+        PokemonAttack.objects.filter(pokemon=pokemon.id).delete()
+        for attack_id in attack_ids:
+            PokemonAttack.objects.create(
+                pokemon=pokemon,
+                attack=Attack.objects.get(pk=attack_id)
+            )
+        return Response(status=200)
 
 
 class SpeciesDetail(generics.RetrieveAPIView):

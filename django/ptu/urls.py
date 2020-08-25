@@ -27,6 +27,7 @@ urlpatterns = [
     path('item-add/<int:pk>/', views.TrainerItemIncrease.as_view(), name='item-increase'),
     path('item-sub/<int:pk>/', views.TrainerItemDecrease.as_view(), name='item-decrease'),
     path('pokemon/<int:pk>/', views.PokemonDetail.as_view(), name='pokemon-detail'),
+    path('pokemon/<int:pk>/learnable-moves/', views.PokemonLearnableMoves.as_view(), name='pokemon-learnable-moves'),
     path('generate/', views.PokemonGenerate.as_view(), name='generate-pokemon'),
     path('pokemonAttack/<int:pk>/', views.PokemonAttackDetail.as_view(), name='pokemonattack-detail'),
     path('addPokemonAttack/', views.PokemonAttackAdd.as_view(), name='pokemonattack-add'),

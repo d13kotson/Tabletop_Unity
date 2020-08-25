@@ -22,7 +22,7 @@ public class PokemonStatus : Window
         this.transform.SetParent(canvas.transform);
         RectTransform rect = this.GetComponent<RectTransform>();
         rect.anchoredPosition = new Vector2(0, 0);
-        rect.sizeDelta = new Vector2(470, -100);
+        rect.sizeDelta = new Vector2(490, -100);
 	}
 
     internal void Set(Pokemon pokemon)

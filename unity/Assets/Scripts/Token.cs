@@ -24,14 +24,14 @@ public class Token : MonoBehaviour
 
 	public void OnMouseDown()
     {
-		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
+		if(!this.controller.IsAttacking && !this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
 			this.isDragging = true;
 			this.controller.IsDragging = true;
 		}
     }
 
     public void OnMouseUp() {
-		if(!this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
+		if(!this.controller.IsAttacking && !this.controller.IsMeasuring && (this.controller.isGM || this.controller.trainer.user == this.owner)) {
 			this.isDragging = false;
 			this.controller.IsDragging = false;
 			this.controller.socket.UpdateToken(this);

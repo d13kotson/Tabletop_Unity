@@ -18,7 +18,7 @@ public class TrainerStatus : Window
         this.transform.SetParent(canvas.transform);
         RectTransform rect = this.GetComponent<RectTransform>();
         rect.anchoredPosition = new Vector2(0, 0);
-        rect.sizeDelta = new Vector2(470, -100);
+        rect.sizeDelta = new Vector2(490, -100);
     }
 
     internal void Set(Trainer trainer)
@@ -78,7 +78,10 @@ public class TrainerStatus : Window
     {
         this.HideTabs();
         this.movesTab.SetActive(true);
-		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, 1080);
+		float size = this.trainer.trainer_attack.Length * 180;
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, size);
+		RectTransform movesPanel = (RectTransform)this.panelsPanel.Find("MovesPanel");
+		movesPanel.localPosition = new Vector2(movesPanel.localPosition.x, 0);
 	}
 
     private void HideTabs()
