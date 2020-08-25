@@ -35,7 +35,6 @@ public class PokemonLevelUp : Window
     internal void Set(Pokemon pokemon)
     {
         this.pokemon = pokemon;
-        int position = -50;
         List<int> knownAttacks = new List<int>();
 
         this.statsTab.transform.Find("BaseConstitution").gameObject.GetComponent<Text>().text = this.pokemon.species.base_constitution.ToString();
@@ -72,32 +71,22 @@ public class PokemonLevelUp : Window
         {
             GameObject movePanel = Instantiate(this.MovePanel);
             movePanel.transform.SetParent(this.MoveContent);
-            RectTransform rect = movePanel.GetComponent<RectTransform>();
-            rect.anchoredPosition = new Vector2(0, position);
-            rect.sizeDelta = new Vector2(0, 120);
             movePanel.GetComponentInChildren<Text>().text = name;
             movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
-            position -= 120;
             knownAttacks.Add(attack.attack.id);
             this.moves.Add(movePanel);
             this.attacks.Add(attack.attack.id);
         }
-        this.controller.SendGetRequest(string.Format("api/pokemon/{0}/learnable-moves", pokemon.id), (request) =>
-        {
-            SpeciesAttackList attacks = JsonUtility.FromJson<SpeciesAttackList>(string.Format("{{\"list\": {0}}}", request.downloadHandler.text));
-            foreach (SpeciesAttack attack in attacks.list.Where((a) => !knownAttacks.Contains(a.attack.id)))
-            {
-                GameObject movePanel = Instantiate(this.MovePanel);
-                movePanel.transform.SetParent(this.MoveContent);
-                RectTransform rect = movePanel.GetComponent<RectTransform>();
-                rect.anchoredPosition = new Vector2(0, position);
-                rect.sizeDelta = new Vector2(0, 120);
-                movePanel.GetComponentInChildren<Text>().text = name;
-                movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
-                position -= 120;
-                this.moves.Add(movePanel);
-                this.attacks.Add(attack.attack.id);
-            }
+		this.controller.SendGetRequest(string.Format("api/pokemon/{0}/learnable-moves", pokemon.id), (request) => {
+		SpeciesAttackList attacks = JsonUtility.FromJson<SpeciesAttackList>(string.Format("{{\"list\": {0}}}", request.downloadHandler.text));
+			foreach(SpeciesAttack attack in attacks.list.Where((a) => !knownAttacks.Contains(a.attack.id))) {
+				GameObject movePanel = Instantiate(this.MovePanel);
+				movePanel.transform.SetParent(this.MoveContent);
+				movePanel.GetComponentInChildren<Text>().text = name;
+				movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
+				this.moves.Add(movePanel);
+				this.attacks.Add(attack.attack.id);
+			}
         }, (request) =>
         {
 
