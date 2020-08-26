@@ -12,6 +12,8 @@ public class Inventory : Window
     public Dropdown ItemSelect = default;
     public InputField ItemName = default;
     public InputField ItemNumber = default;
+	public Text MoneyValue = default;
+	public InputField MoneyInput = default;
     private List<int> itemIDs = new List<int>();
     private List<GameObject> itemPanels = new List<GameObject>();
 
@@ -43,9 +45,9 @@ public class Inventory : Window
             Destroy(item);
         }
         this.itemPanels = new List<GameObject>();
-        Transform canvas = GameObject.FindGameObjectWithTag("Canvas").GetComponent<Transform>();
         if (!this.controller.isGM)
         {
+			this.MoneyValue.text = this.controller.trainer.money.ToString();
             int position = -25;
             foreach (TrainerItem item in this.controller.trainer.item)
             {
@@ -70,8 +72,8 @@ public class Inventory : Window
             button.transform.Find("Name").gameObject.GetComponent<Text>().text = item.item.name;
         }
         button.transform.Find("Number").gameObject.GetComponent<Text>().text = item.number.ToString();
-        button.transform.Find("Add").gameObject.GetComponent<Button>().onClick.AddListener(delegate { this.addItem(item); });
-        button.transform.Find("Sub").gameObject.GetComponent<Button>().onClick.AddListener(delegate { this.subItem(item); });
+        button.transform.Find("IncSub").Find("Add").gameObject.GetComponent<Button>().onClick.AddListener(delegate { this.addItem(item); });
+        button.transform.Find("IncSub").Find("Sub").gameObject.GetComponent<Button>().onClick.AddListener(delegate { this.subItem(item); });
         return position - 50;
     }
 
@@ -133,4 +135,14 @@ public class Inventory : Window
 
         });
     }
+
+	public void AddMoney() {
+		try {
+			int money = int.Parse(this.MoneyInput.text);
+			this.controller.trainer.money += money;
+			string data = JsonUtility.ToJson(this.controller.trainer);
+			this.controller.SendPutRequest(string.Format("api/trainer/{0}", this.controller.trainer.id), data, (request) => this.controller.Reload(), (request) => { });
+		}
+		catch {}
+	}
 }
