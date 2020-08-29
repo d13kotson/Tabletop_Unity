@@ -8,6 +8,8 @@ public class TrainerStatus : Window
     private GameObject statsTab;
     private GameObject skillsTab;
     private GameObject movesTab;
+	private GameObject edgesTab;
+	private GameObject featuresTab;
 	private RectTransform panelsPanel;
 
 	void Awake()
@@ -34,13 +36,18 @@ public class TrainerStatus : Window
         Transform content = this.gameObject.transform.Find("Viewport").Find("Content");
 		this.panelsPanel = (RectTransform)content.Find("Panels");
 		content.Find("Main").Find("Name").gameObject.GetComponent<Text>().text = this.trainer.name;
+		content.Find("Level").Find("Level").gameObject.GetComponent<Text>().text = this.trainer.level.ToString();
         this.statsTab = content.Find("Panels").Find("StatsPanel").gameObject;
         this.statsTab.GetComponent<TrainerStatsTab>().Set(this.trainer);
         this.skillsTab = content.Find("Panels").Find("SkillsPanel").gameObject;
         this.skillsTab.GetComponent<TrainerSkillsTab>().Set(this.trainer);
         this.movesTab = content.Find("Panels").Find("MovesPanel").gameObject;
         this.movesTab.GetComponent<TrainerMovesTab>().Set(this.trainer);
-    }
+		this.edgesTab = content.Find("Panels").Find("EdgesPanel").gameObject;
+		this.edgesTab.GetComponent<TrainerEdgesTab>().Set(this.trainer);
+		this.featuresTab = content.Find("Panels").Find("FeaturesPanel").gameObject;
+		this.featuresTab.GetComponent<TrainerFeaturesTab>().Set(this.trainer);
+	}
 
     private void setTokenSprite()
     {
@@ -84,12 +91,32 @@ public class TrainerStatus : Window
 		movesPanel.localPosition = new Vector2(movesPanel.localPosition.x, 0);
 	}
 
-    private void HideTabs()
+	public void ShowEdges() {
+		this.HideTabs();
+		this.edgesTab.SetActive(true);
+		float size = this.trainer.trainer_edge.Length * 80;
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, size);
+		RectTransform edgesPanel = (RectTransform)this.panelsPanel.Find("EdgesPanel");
+		edgesPanel.localPosition = new Vector2(edgesPanel.localPosition.x, 0);
+	}
+
+	public void ShowFeatures() {
+		this.HideTabs();
+		this.featuresTab.SetActive(true);
+		float size = this.trainer.trainer_feature.Length * 155;
+		this.panelsPanel.sizeDelta = new Vector2(this.panelsPanel.sizeDelta.x, size);
+		RectTransform featuresPanel = (RectTransform)this.panelsPanel.Find("FeaturesPanel");
+		featuresPanel.localPosition = new Vector2(featuresPanel.localPosition.x, 0);
+	}
+
+	private void HideTabs()
     {
         this.statsTab.SetActive(false);
         this.skillsTab.SetActive(false);
         this.movesTab.SetActive(false);
-    }
+		this.edgesTab.SetActive(false);
+		this.featuresTab.SetActive(false);
+	}
 
     void UpdateAttack()
     {
