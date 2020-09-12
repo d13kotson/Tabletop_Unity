@@ -201,6 +201,7 @@ class Species(models.Model):
     size = models.CharField(max_length=50)
     weight = models.IntegerField()
     egg_groups = models.CharField(max_length=200, blank=True, null=True)
+    capture_rate = models.IntegerField(default=255)
 
 
     def __str__(self):
@@ -285,6 +286,24 @@ class Pokemon(models.Model):
     current_hp = models.IntegerField(default=0)
     ability = models.CharField(max_length=40, null=True, blank=True)
     token = models.ForeignKey(Token, on_delete=models.CASCADE, null=True, blank=True)
+    burned = models.BooleanField(default=False)
+    frozen = models.BooleanField(default=False)
+    paralyzed = models.BooleanField(default=False)
+    poisoned = models.BooleanField(default=False)
+    asleep = models.BooleanField(default=False)
+    confused = models.BooleanField(default=False)
+    cursed = models.BooleanField(default=False)
+    disabled = models.BooleanField(default=False)
+    enraged = models.BooleanField(default=False)
+    flinched = models.BooleanField(default=False)
+    infatuated = models.BooleanField(default=False)
+    suppressed = models.BooleanField(default=False)
+    blind = models.BooleanField(default=False)
+    slowed = models.BooleanField(default=False)
+    stuck = models.BooleanField(default=False)
+    trapped = models.BooleanField(default=False)
+    tripped = models.BooleanField(default=False)
+    vulnerable = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name

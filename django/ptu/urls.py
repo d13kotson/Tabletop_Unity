@@ -41,6 +41,8 @@ urlpatterns = [
     path('trainerFeature/<int:pk>/', views.TrainerFeatureDetail.as_view(), name='trainerfeature-detail'),
     path('addTrainerFeature/', views.TrainerFeatureAdd.as_view(), name='trainerfeature-add'),
 
+    path('catch/<int:trainer_pk>/<int:pokemon_pk>/', views.CatchPokemon.as_view(), name='catch-pokemon'),
+
     path('messages/<int:game>/', views.GameMessageList.as_view()),
     path('background-info/<int:pk>/', views.BackgroundDetail.as_view(), name='background-info'),
     path('image/', views.upload_image),

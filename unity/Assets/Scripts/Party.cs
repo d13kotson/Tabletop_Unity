@@ -20,7 +20,9 @@ public class Party : Window
         Transform canvas = GameObject.FindGameObjectWithTag("Canvas").GetComponent<Transform>();
         this.trainers = new Dictionary<int, TrainerStatus>();
         this.pokemon = new Dictionary<int, PokemonStatus>();
-        if (this.controller.isGM)
+		this.controller.trainerStatuses = new Dictionary<int, GameObject>();
+		this.controller.pokemonStatuses = new Dictionary<int, GameObject>();
+		if (this.controller.isGM)
         {
             foreach (Trainer trainer in this.controller.game.trainer)
             {

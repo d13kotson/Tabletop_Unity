@@ -1,5 +1,6 @@
 import json
 import os
+import random
 from array import array
 from pathlib import Path
 
@@ -308,6 +309,31 @@ class TokenDetail(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Token.objects.all()
     serializer_class = serializers.TokenSerializer
+
+
+class CatchPokemon(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, trainer_pk, pokemon_pk):
+        pokemon = Pokemon.objects.get(pk=pokemon_pk)
+        ball = request.POST['ball']
+        max_hp = pokemon.level + pokemon.total_constitution * 3 + 10
+        bonus_stats = 1.0
+        if pokemon.asleep or pokemon.frozen:
+            bonus_stats = 2.0
+        if pokemon.paralyzed or pokemon.poisoned or pokemon.burned:
+            bonus_stats = 1.5
+        catch_rate = ((3 * max_hp - 2 * pokemon.current_hp) * pokemon.species.capture_rate * ball) / (3 * max_hp) * bonus_stats
+        catch = random.randint(1, 255)
+
+        if catch <= catch_rate:
+            trainer = Trainer.objects.get(pk=trainer_pk)
+            if Pokemon.objects.filter(trainer=trainer.id, in_party=True).count() >= 6:
+                pokemon.in_party = False
+            else:
+                pokemon.in_party = True
+            pokemon.trainer = trainer
+            pokemon.token.user = request.user
 
 
 def image(request, pk):

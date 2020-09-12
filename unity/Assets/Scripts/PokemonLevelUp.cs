@@ -82,7 +82,6 @@ public class PokemonLevelUp : Window
 			foreach(SpeciesAttack attack in attacks.list.Where((a) => !knownAttacks.Contains(a.attack.id))) {
 				GameObject movePanel = Instantiate(this.MovePanel);
 				movePanel.transform.SetParent(this.MoveContent);
-				movePanel.GetComponentInChildren<Text>().text = name;
 				movePanel.GetComponent<MovePanel>().Set(attack.attack, pokemon.id, TokenType.pokemon);
 				this.moves.Add(movePanel);
 				this.attacks.Add(attack.attack.id);
