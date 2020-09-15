@@ -5,9 +5,11 @@ using UnityEngine.UI;
 
 public class LineDrawer : MonoBehaviour
 {
-	private LineRenderer lineRend;
+	private UILineRenderer lineRend;
+	private Vector2 mousePosCam;
 	private Vector2 mousePos;
 	private Vector2 startMousePos;
+	private Vector2 startMousePosCam;
 
 	[SerializeField]
 	private Text distanceText = default;
@@ -20,29 +22,30 @@ public class LineDrawer : MonoBehaviour
     void Start()
     {
 		this.controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-		this.lineRend = GetComponent<LineRenderer>();
-		lineRend.positionCount = 2;
+		this.lineRend = GetComponent<UILineRenderer>();
     }
 	
     void Update()
     {
         if(this.controller.IsMeasuring) {
 			if (Input.GetMouseButtonDown(0)) {
-				startMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				this.startMousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				this.startMousePosCam = Input.mousePosition;
 				this.lineDrawn = true;
 			}
 
 			if (Input.GetMouseButton(0)) {
-				mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-				lineRend.SetPosition(0, new Vector3(startMousePos.x, startMousePos.y, 0f));
-				lineRend.SetPosition(1, new Vector3(mousePos.x, mousePos.y, 0f));
-				distance = (mousePos - startMousePos).magnitude;
-				distanceText.text = (distance * scale).ToString("F2") + "meters";
+				this.mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				this.mousePosCam = Input.mousePosition;
+				this.lineRend.Points = new Vector2[] { this.startMousePosCam, this.mousePosCam };
+				this.lineRend.SetVerticesDirty();
+				this.distance = (this.mousePos - this.startMousePos).magnitude;
+				this.distanceText.text = (this.distance * this.scale).ToString("F2") + "meters";
 			}
 		}
 		else if(this.lineDrawn) {
-			lineRend.SetPosition(0, Vector3.zero);
-			lineRend.SetPosition(1, Vector3.zero);
+			this.lineRend.Points = new Vector2[] { Vector2.zero, Vector2.zero };
+			this.lineRend.SetVerticesDirty();
 			this.distanceText.text = "";
 		}
     }
