@@ -16,7 +16,10 @@ public class TrainerEdgesTab : MonoBehaviour
     {
         this.trainer = trainer;
         Transform content = this.gameObject.transform;
-        foreach(TrainerEdge edge in this.trainer.trainer_edge)
+		foreach(Transform child in content) {
+			Destroy(child.gameObject);
+		}
+		foreach(TrainerEdge edge in this.trainer.trainer_edge)
         {
             GameObject edgePanel = Instantiate(this.EdgePanel);
 			edgePanel.transform.SetParent(content);

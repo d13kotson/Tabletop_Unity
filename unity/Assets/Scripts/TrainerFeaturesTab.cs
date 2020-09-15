@@ -16,7 +16,10 @@ public class TrainerFeaturesTab : MonoBehaviour
     {
         this.trainer = trainer;
         Transform content = this.gameObject.transform;
-        foreach(TrainerFeature feature in this.trainer.trainer_feature)
+		foreach(Transform child in content) {
+			Destroy(child.gameObject);
+		}
+		foreach(TrainerFeature feature in this.trainer.trainer_feature)
         {
             GameObject featurePanel = Instantiate(this.FeaturePanel);
 			featurePanel.transform.SetParent(content);

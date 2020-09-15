@@ -265,7 +265,7 @@ class Nature(models.Model):
 
 class Pokemon(models.Model):
     name = models.CharField(max_length=20)
-    trainer = models.ForeignKey(Trainer, null=True, related_name='pokemon', on_delete=models.CASCADE)
+    trainer = models.ForeignKey(Trainer, null=True, blank=True, related_name='pokemon', on_delete=models.CASCADE)
     game = models.ForeignKey(Game, null=True, related_name='pokemon', on_delete=models.CASCADE)
     species = models.ForeignKey(Species, on_delete=models.CASCADE)
     nature = models.ForeignKey(Nature, on_delete=models.CASCADE)

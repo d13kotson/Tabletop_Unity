@@ -223,17 +223,24 @@ class PTUConsumer(WebsocketConsumer):
         else:
             defender = Pokemon.objects.get(pk=defender_id)
         attack = Attack.objects.get(pk=attack_id)
+        if 'Five Strike' in attack.range:
+            attack_count = 5
+        elif 'Double Strike' in attack.range:
+            attack_count = 2
+        else:
+            attack_count = 1
 
-        message = self.roll_damage(attack, attacker, defender)
-        async_to_sync(self.channel_layer.group_send)(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'display_name': display_name,
-                'gm_roll': False,
-                'message': message
-            }
-        )
+        for i in range(attack_count):
+            message = self.roll_damage(attack, attacker, defender)
+            async_to_sync(self.channel_layer.group_send)(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'display_name': display_name,
+                    'gm_roll': False,
+                    'message': message
+                }
+            )
 
     def parse_die_roll(self, message):
         num_die = message.split('d')[0].strip()
@@ -273,7 +280,7 @@ class PTUConsumer(WebsocketConsumer):
             return f'Rolled a {hit_roll} to hit.'
         db_id = attack.damage_base.id
         if type(attacker) is Pokemon:
-            if attacker.species.type_1.id == attack.type.id or attacker.species.type_2.id == attack.type.id:
+            if attacker.species.type_1.id == attack.type.id or (attacker.species.type_2 is not None and attacker.species.type_2.id == attack.type.id):
                 db_id += 2
 
         db = DamageBase.objects.get(pk=db_id)
