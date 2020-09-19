@@ -132,6 +132,15 @@ internal struct Type {
 }
 
 [Serializable]
+internal struct DamageBase {
+	public int id;
+	public int num_die;
+	public int die_num;
+	public int add;
+
+}
+
+[Serializable]
 internal struct Attack
 {
     public int id;
@@ -139,7 +148,7 @@ internal struct Attack
     public Type type;
     public string frequency;
     public int ac;
-    public int damage_base;
+    public DamageBase damage_base;
     public string attack_class;
     public string range;
     public string effect;

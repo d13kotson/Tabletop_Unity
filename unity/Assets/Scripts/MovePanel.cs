@@ -19,7 +19,7 @@ public class MovePanel : MonoBehaviour
         content.Find("Type").gameObject.GetComponent<Text>().text = attack.type.name;
         content.Find("Frequency").gameObject.GetComponent<Text>().text = attack.frequency;
         content.Find("AC").gameObject.GetComponent<Text>().text = attack.ac.ToString();
-        content.Find("DB").gameObject.GetComponent<Text>().text = attack.damage_base.ToString();
+        content.Find("DB").gameObject.GetComponent<Text>().text = attack.damage_base.id.ToString();
         content.Find("Class").gameObject.GetComponent<Text>().text = attack.attack_class;
         content.Find("Range").gameObject.GetComponent<Text>().text = attack.range;
 		content.Find("Effect").gameObject.GetComponent<Text>().text = attack.effect;
