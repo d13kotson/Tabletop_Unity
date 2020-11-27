@@ -346,7 +346,6 @@ It will deal {floor(sum)} damage.
 If Critical add {num_die * die_num * effectiveness} damage!'''
         return message
 
-
     def chat_message(self, event):
         message = event['message']
         display_name = event['display_name']

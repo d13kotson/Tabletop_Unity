@@ -753,7 +753,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 8525758997148221219}
         m_MethodName: UpdateDefense
         m_Mode: 2
         m_Arguments:
@@ -1461,7 +1461,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 8525758997148221219}
         m_MethodName: UpdateSpeed
         m_Mode: 2
         m_Arguments:
@@ -2109,7 +2109,7 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -2325,7 +2325,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2002536410186530716
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2426,7 +2426,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 2002536409032349226}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99992365
+  m_Size: 0.999998
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2558,7 +2558,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -244.97578, y: -0.000008076429}
+  m_AnchoredPosition: {x: -244.99979, y: -0.000008076429}
   m_SizeDelta: {x: 470, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &8581766892029408941
@@ -2654,7 +2654,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2002536410653672434
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4837,7 +4837,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 8525758997148221219}
         m_MethodName: UpdateSpecialAttack
         m_Mode: 2
         m_Arguments:
@@ -6544,7 +6544,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 8525758997148221219}
         m_MethodName: UpdateAttack
         m_Mode: 2
         m_Arguments:
@@ -7313,7 +7313,7 @@ MonoBehaviour:
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 8525758997148221219}
         m_MethodName: UpdateSpecialDefense
         m_Mode: 2
         m_Arguments:

@@ -118,44 +118,43 @@ public class TrainerStatus : Window
 		this.featuresTab.SetActive(false);
 	}
 
-    void UpdateAttack()
-    {
-        string newCS = this.gameObject.transform.Find("StatsPanel").Find("AttackCS").gameObject.GetComponentInChildren<Text>().text;
-        float multiple = int.Parse(newCS) / 2;
-    }
-
     public void UpdateAttack(InputField input)
     {
         int newCS = int.Parse(input.text);
         this.trainer.attack_cs = newCS;
         this.UpdateTrainer();
-    }
+		this.controller.SendPutRequest(string.Format("api/trainer/{0}", this.trainer.id), JsonUtility.ToJson(this.trainer), (request) => { }, (request) => { });
+	}
 
     public void UpdateDefense(InputField input)
     {
         int newCS = int.Parse(input.text);
         this.trainer.defense_cs = newCS;
         this.UpdateTrainer();
-    }
+		this.controller.SendPutRequest(string.Format("api/trainer/{0}", this.trainer.id), JsonUtility.ToJson(this.trainer), (request) => { }, (request) => { });
+	}
 
     public void UpdateSpecialAttack(InputField input)
     {
         int newCS = int.Parse(input.text);
         this.trainer.special_attack_cs = newCS;
         this.UpdateTrainer();
-    }
+		this.controller.SendPutRequest(string.Format("api/trainer/{0}", this.trainer.id), JsonUtility.ToJson(this.trainer), (request) => { }, (request) => { });
+	}
 
     public void UpdateSpecialDefense(InputField input)
     {
         int newCS = int.Parse(input.text);
         this.trainer.special_defense_cs = newCS;
         this.UpdateTrainer();
-    }
+		this.controller.SendPutRequest(string.Format("api/trainer/{0}", this.trainer.id), JsonUtility.ToJson(this.trainer), (request) => { }, (request) => { });
+	}
 
     public void UpdateSpeed(InputField input)
     {
         int newCS = int.Parse(input.text);
         this.trainer.speed_cs = newCS;
         this.UpdateTrainer();
-    }
+		this.controller.SendPutRequest(string.Format("api/trainer/{0}", this.trainer.id), JsonUtility.ToJson(this.trainer), (request) => { }, (request) => { });
+	}
 }

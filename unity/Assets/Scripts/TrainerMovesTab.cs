@@ -16,7 +16,10 @@ public class TrainerMovesTab : MonoBehaviour
     {
         this.trainer = trainer;
         Transform content = this.gameObject.transform;
-        foreach(TrainerAttack attack in this.trainer.trainer_attack)
+		foreach(Transform child in content) {
+			Destroy(child.gameObject);
+		}
+		foreach(TrainerAttack attack in this.trainer.trainer_attack)
         {
             GameObject movePanel = Instantiate(this.MovePanel);
             movePanel.transform.SetParent(content);
